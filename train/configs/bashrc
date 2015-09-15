@@ -1,0 +1,9 @@
+export SHELL='/bin/bash'
+export LS_OPTIONS='--color=auto'
+eval "`dircolors`"
+
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ls='ls $LS_OPTIONS'
+alias ll='ls $LS_OPTIONS -l'
+alias la='ls $LS_OPTIONS -lA'
