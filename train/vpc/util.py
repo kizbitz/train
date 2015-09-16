@@ -21,7 +21,7 @@ def yn_prompt(query):
         ret = strtobool(val)
     except ValueError:
         sys.stdout.write('Please answer with a y/n\n')
-        return prompt(query)
+        return yn_prompt(query)
     return ret
 
 
