@@ -216,7 +216,7 @@ def create_key_pairs():
                 if util.yn_prompt('Key pair exists. Delete and create a new one?'):
                     delete_key_pair(user)
                 else:
-                    return
+                    continue
 
             print "Creating key pair: {0} ...".format(user + '-{0}'.format(TRAIN_TAG))
             key = conn.create_key_pair(user + '-{0}'.format(TRAIN_TAG))
