@@ -311,6 +311,7 @@ Lab 'acp-workshop' launched with tag 'acp-workshop-1':
 
 At this point all user keys and the lab instance information within saved in the container in `/host/share` (and in the host directory):
 
+Note: On Windows open the *.txt files with Wordpad (or some other app that will render the \n's correctly)
 ```
 train@d7d8c5f68818:~$ tree /host/share
 /host/share
