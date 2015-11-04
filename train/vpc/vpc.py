@@ -165,6 +165,51 @@ def _configure_default_security_group(conn, vpc):
                     to_port='65535',
                     cidr_ip=local_ip + '/32')
 
+    # common
+    sg[0].authorize(ip_protocol='tcp',
+                    from_port='22',
+                    to_port='22',
+                    cidr_ip='0.0.0.0/0')
+
+    sg[0].authorize(ip_protocol='tcp',
+                    from_port='80',
+                    to_port='80',
+                    cidr_ip='0.0.0.0/0')
+
+    sg[0].authorize(ip_protocol='tcp',
+                    from_port='443',
+                    to_port='443',
+                    cidr_ip='0.0.0.0/0')
+
+    sg[0].authorize(ip_protocol='tcp',
+                    from_port='2375',
+                    to_port='2376',
+                    cidr_ip='0.0.0.0/0')
+
+    sg[0].authorize(ip_protocol='tcp',
+                    from_port='3375',
+                    to_port='3376',
+                    cidr_ip='0.0.0.0/0')
+
+    sg[0].authorize(ip_protocol='tcp',
+                    from_port='5000',
+                    to_port='5000',
+                    cidr_ip='0.0.0.0/0')
+
+    sg[0].authorize(ip_protocol='tcp',
+                    from_port='8000',
+                    to_port='8000',
+                    cidr_ip='0.0.0.0/0')
+
+    sg[0].authorize(ip_protocol='tcp',
+                    from_port='8080',
+                    to_port='8080',
+                    cidr_ip='0.0.0.0/0')
+
+    sg[0].authorize(ip_protocol='tcp',
+                    from_port='9999',
+                    to_port='9999',
+                    cidr_ip='0.0.0.0/0')
 
 def create_interface(subnet_id, sids):
     """Creates AWS EC2 network interface"""
