@@ -270,6 +270,9 @@ def create_key_pairs():
             key = conn.create_key_pair(user + '-{0}'.format(TRAIN_TAG))
             key.save('/host/share/{0}'.format(user))
 
+            # Generate ppk for Windows/PuTTY users
+            os.system("puttygen /host/share/{0}/{0}-{1}.pem -o /host/share/{0}/{0}-{1}.ppk -O private".format(user, TRAIN_TAG))
+
             print "Key '{0}' created and saved ...".format(user + '-{0}'.format(TRAIN_TAG))
 
 
