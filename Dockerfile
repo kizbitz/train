@@ -7,6 +7,7 @@ WORKDIR /home/train
 
 RUN apt-get update && apt-get install -y \
     git \
+    putty-tools \
     sudo \
     tree \
     vim

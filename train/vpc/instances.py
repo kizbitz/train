@@ -226,7 +226,7 @@ def launch_instances(conn, user_vpc, lab, labmod, cfg, security_groups, subnets)
         while instance[1].state != 'running':
             print "Waiting for instance '{0}-{1}' to initialize ...".format(instance[2],
                                                                               instance[0]['NAME'])
-            time.sleep(1)
+            time.sleep(0.5)
             instance[1].update()
 
     # set elastic ips and tag instances
