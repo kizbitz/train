@@ -13,17 +13,20 @@ def _prompt_config(lab, path):
     """Prompt for the lab configuration script"""
 
     # TODO: Check for valid input
-    files = [d for d in os.listdir(path) if os.path.isfile(os.path.join(path, d))]
+    files = [f for f in os.listdir(path) if f.endswith('.py')]
 
-    print "Available configurations for the '{0}' lab:\n".format(lab)
-    files.sort()
-    for f in files:
-        if f.endswith('.py'):
-            print '  - ', f.strip('.py')
+    if len(files) == 1:
+        return files[0].strip('.py')
+    else:
+        print "Available configurations for the '{0}' lab:\n".format(lab)
+        files.sort()
+        for f in files:
+            if f.endswith('.py'):
+                print '  - ', f.strip('.py')
 
-    config = raw_input('\nWhich configuration would you like to execute?: ')
+        config = raw_input('\nWhich configuration would you like to execute?: ')
 
-    return config
+        return config
 
 
 def list_available_labs():
@@ -126,8 +129,10 @@ def get_user_instance_info(conn, user_vpc, lab_tag, user):
             final.append("""
 Name:         {0}
   IP:         {1}
-  Public DNS: {2}\n""".format(instance.tags['Name'],
+  Private IP: {2}
+  Public DNS: {3}\n""".format(instance.tags['Name'],
                                 instance.ip_address,
+                                instance.private_ip_address,
                                 instance.public_dns_name))
     final.sort()
 
@@ -148,10 +153,12 @@ def get_lab_instance_info(conn, user_vpc, lab_tag):
       Lab:        {1}
       Region:     {2}
       IP:         {3}
-      Public DNS: {4}""".format(instance.tags['Name'],
+      Private IP: {4}
+      Public DNS: {5}""".format(instance.tags['Name'],
                                 instance.tags['Lab'],
                                 str(instance.region).replace('RegionInfo:',''),
                                 instance.ip_address,
+                                instance.private_ip_address,
                                 instance.public_dns_name))
     final.sort()
 
@@ -205,9 +212,12 @@ def terminate_lab(conn, user_vpc, lab_tag):
 
     conn.terminate_instances(instance_ids=instance_ids)
 
-    with open(USER_FILE) as users:
-        for user in users:
-            os.remove('/host/share/{0}/{1}.txt'.format(user.strip(), lab_tag))
+    try:
+        with open(USER_FILE) as users:
+            for user in users:
+                os.remove('/host/share/{0}/{1}.txt'.format(user.strip(), lab_tag))
+    except:
+        print "No user files removed..."
 
     print "\nTerminate request sent for all lab instances ..."
     print "Lab '{0}' has been deleted ...\n".format(lab_tag)
