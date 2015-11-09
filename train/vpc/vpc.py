@@ -149,9 +149,9 @@ def _configure_default_security_group(conn, vpc):
 
     print 'Adding default egress rules ...'
     conn.authorize_security_group_egress(group_id=sg[0].id,
-                                         ip_protocol='tcp',
-                                         from_port='0',
-                                         to_port='65535',
+                                         ip_protocol="-1",
+                                         from_port='-1',
+                                         to_port='-1',
                                          cidr_ip='0.0.0.0/0')
 
     # allow traffic for vpc instances
