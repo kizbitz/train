@@ -39,7 +39,7 @@ TRAINER = check_env('TRAINER')
 # AWS region, id, and key
 AWS_REGION = check_env('AWS_REGION')
 AWS_ACCESS_KEY_ID = check_env('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = ('AWS_SECRET_ACCESS_KEY')
+AWS_SECRET_ACCESS_KEY = check_env('AWS_SECRET_ACCESS_KEY')
 
 
 # Optional environment variables
