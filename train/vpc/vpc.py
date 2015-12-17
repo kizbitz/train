@@ -83,14 +83,14 @@ def _create_subnets(conn, vpc, route_table):
     regions = [r.name for r in boto.ec2.regions()]
     zones = [z.name for z in conn.get_all_zones()]
 
-    current_ip = 10
+    current_ip = 0
     for zone in zones:
         tag = TRAINER + '-{0}-'.format(TRAIN_TAG) + zone
-        print "10.0.{0}.0/24".format(current_ip)
+        print "10.0.{0}.0/20".format(current_ip)
 
         print 'Creating subnet: {0} ...'.format(tag)
         subnet = conn.create_subnet(vpc.id,
-                                    "10.0.{0}.0/24".format(current_ip),
+                                    "10.0.{0}.0/20".format(current_ip),
                                     availability_zone=zone)
         subnet.add_tag('Name', tag)
 
@@ -105,7 +105,7 @@ def _create_subnets(conn, vpc, route_table):
             'aws ec2 modify-subnet-attribute --subnet-id {0} --map-public-ip-on-launch'
             .format(subnet.id))
 
-        current_ip += 1
+        current_ip += 16
 
 
 def _configure_network_acl(conn, vpc):
@@ -158,12 +158,12 @@ def _configure_default_security_group(conn, vpc):
     sg[0].authorize(ip_protocol="-1", src_group=sg[0])
 
     # add local IP
-    local_ip = commands.getstatusoutput('curl -s icanhazip.com')[1]
-    print 'Adding your current location IP ({0}) to default security group ...'.format(local_ip)
-    sg[0].authorize(ip_protocol='tcp',
-                    from_port='0',
-                    to_port='65535',
-                    cidr_ip=local_ip + '/32')
+    #local_ip = commands.getstatusoutput('curl -s icanhazip.com')[1]
+    #print 'Adding your current location IP ({0}) to default security group ...'.format(local_ip)
+    #sg[0].authorize(ip_protocol='tcp',
+                    #from_port='0',
+                    #to_port='65535',
+                    #cidr_ip=local_ip + '/32')
 
     # common
     sg[0].authorize(ip_protocol='tcp',
@@ -254,7 +254,7 @@ def create_key_pairs():
 
     with open(USER_FILE) as users:
         for user in users:
-            user = user.strip()
+            user = user.split(',')[0].strip()
 
             # directory to store keys on host
             if not os.path.exists('/host/share/{0}'.format(user)):
@@ -306,7 +306,7 @@ def delete_key_pairs():
 
     with open(USER_FILE) as users:
         for user in users:
-            user = user.strip()
+            user = user.split(',')[0].strip()
             print "Deleting key pair for user: {0} ...".format(user.strip())
             conn.delete_key_pair(user + '-{0}'.format(TRAIN_TAG))
             if os.path.exists('/host/share/{0}/{1}'.format(user, user + '-{0}.pem'.format(TRAIN_TAG))):

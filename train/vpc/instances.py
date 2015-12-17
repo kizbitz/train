@@ -104,7 +104,7 @@ def output_user_files(conn, user_vpc, lab_tag):
 
     with open(USER_FILE) as users:
         for user in users:
-            user = user.strip()
+            user = user.split(',')[0].strip()
 
             # directory to store instance info on host
             if not os.path.exists('/host/share/{0}'.format(user)):
@@ -176,7 +176,7 @@ def launch_instances(conn, user_vpc, lab, labmod, cfg, security_groups, subnets)
 
     with open(USER_FILE) as users:
         for user in users:
-            user = user.strip()
+            user = user.split(',')[0].strip()
             for instance in cfg['instance']:
 
                 # check for unique 'Name' tag
