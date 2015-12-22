@@ -25,6 +25,29 @@ def yn_prompt(query):
     return ret
 
 
+def list_prompt(query, qlist):
+    """Prompts for item from a list"""
+
+    final = {}
+    for n, i in enumerate(qlist, start=1):
+        print " {0}) {1}".format(n,i)
+        final[str(n)] = i
+    answer = raw_input('\n' + query)
+
+    try:
+        int(answer)
+    except ValueError:
+        print '\nError: Invalid input\n'
+        return list_prompt(query, qlist)
+    try:
+        final[answer]
+    except KeyError:
+        print '\nError: Invalid input\n'
+        return list_prompt(query, qlist)
+
+    return (final, answer)
+
+
 def read_config(config):
     """Load toml config file"""
 
