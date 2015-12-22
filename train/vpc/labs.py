@@ -12,21 +12,19 @@ import util
 def _prompt_config(lab, path):
     """Prompt for the lab configuration script"""
 
-    # TODO: Check for valid input
     files = [f for f in os.listdir(path) if f.endswith('.py')]
+    files.sort()
 
     if len(files) == 1:
         return files[0].strip('.py')
     else:
         print "Available configurations for the '{0}' lab:\n".format(lab)
-        files.sort()
+        options = []
         for f in files:
             if f.endswith('.py'):
-                print '  - ', f.strip('.py')
+                options.append(f.strip('.py'))
 
-        config = raw_input('\nWhich configuration would you like to execute?: ')
-
-        return config
+        return util.list_prompt('\nWhich configuration would you like to execute?: ', options)
 
 
 def list_available_labs():
@@ -169,10 +167,10 @@ def launch_lab(conn, user_vpc, lab):
     """Execute a lab configuration"""
 
     path = LAB_DIR + lab + '/scripts/'
-    response = _prompt_config(lab, path)
+    prompt, answer = _prompt_config(lab, path)
 
     # import lab configs
-    labmod = imp.load_source('labmod', path + response + '.py')
+    labmod = imp.load_source('labmod', path + prompt[answer] + '.py')
     labmod.pre_process()
     cfg = util.read_config(LAB_DIR + lab + '/instances.cfg')
 
