@@ -183,7 +183,10 @@ def launch_instances(conn, user_vpc, lab, labmod, cfg, security_groups, subnets)
                 for count in range(instance['COUNT']):
                     current = instance.copy()
                     if 'NAME' in instance:
-                        current['NAME'] = instance['NAME'] + '-' + str(count)
+                        if current['COUNT'] > 1:
+                            current['NAME'] = instance['NAME'] + '-' + str(count)
+                        else:
+                            current['NAME'] = instance['NAME']
                     if 'NAMES' in instance:
                         current['NAME'] = instance['NAMES'][count]
 
