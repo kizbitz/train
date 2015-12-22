@@ -324,6 +324,18 @@ def get_vpc_id(conn, vpc_tag):
                 return v
 
 
+def get_starting_zone(subnets):
+    """Return a starting zone number for current region"""
+    zones = []
+    for s in subnets:
+        zones.append(s.availability_zone)
+
+    zones.sort()
+    for z in ZONES:
+        if zones[0][-1] == z:
+            return ZONES.index(z) + 1
+
+
 def get_subnet_id(item, subnets):
     """Return the subnet id"""
 

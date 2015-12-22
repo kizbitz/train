@@ -174,50 +174,67 @@ def launch_instances(conn, user_vpc, lab, labmod, cfg, security_groups, subnets)
     if not os.path.exists('train/logs'):
         os.makedirs('train/logs')
 
+    zone_count = vpc.get_starting_zone(subnets)
+    zone_max = zone_count + len(subnets)
     with open(USER_FILE) as users:
         for user in users:
             user = user.split(',')[0].strip()
             for instance in cfg['instance']:
+                for count in range(instance['COUNT']):
+                    current = instance.copy()
+                    if 'NAME' in instance:
+                        if current['COUNT'] > 1:
+                            current['NAME'] = instance['NAME'] + '-' + str(count)
+                        else:
+                            current['NAME'] = instance['NAME']
+                    if 'NAMES' in instance:
+                        current['NAME'] = instance['NAMES'][count]
 
-                # check for unique 'Name' tag
-                # Removed this check for speed
-                # TODO: Handle somehow - prompt or autoset a name
-                #_check_name_tag(conn, user_vpc, instance)
+                    # autorotate zones
+                    if instance['COUNT'] > 1:
+                        current['ZONE'] = zone_count
+                        zone_count += 1
+                        if zone_count == zone_max:
+                            zone_count = vpc.get_starting_zone(subnets)
 
-                # security group ids
-                sids = vpc.get_sg_ids(cfg, instance, security_groups, VPC_TAG)
+                    # check for unique 'Name' tag
+                    # Removed this check for speed
+                    # TODO: Handle somehow - prompt or autoset a name
+                    #_check_name_tag(conn, user_vpc, current)
 
-                # device info
-                bdm, dinfo = configure_devices(instance)
+                    # security group ids
+                    sids = vpc.get_sg_ids(cfg, current, security_groups, VPC_TAG)
 
-                # network interface
-                interface = vpc.create_interface(vpc.get_subnet_id(instance, subnets), sids)
+                    # device info
+                    bdm, dinfo = configure_devices(current)
 
-                # user data script
-                udata = getattr(labmod, instance['ID'])
+                    # network interface
+                    interface = vpc.create_interface(vpc.get_subnet_id(current, subnets), sids)
 
-                # save the 'user data' script for reference
-                # useful for lab creation/debug
-                with open('train/logs/{0}.sh'.format(instance['NAME']), 'w') as file:
-                    file.write(udata.format(fqdn=instance['NAME'], dinfo=dinfo))
+                    # user data script
+                    udata = getattr(labmod, current['SCRIPT'])
 
-                #initialize_udata(labmod, instance, udata)
-                # launch instance
-                print "Launching instance: {0}-{1} ...".format(user, instance['NAME'])
-                reservation = conn.run_instances(image_id=AMIS[getattr(labmod, instance['OS'])],
-                                                 key_name=user + '-{0}'.format(TRAIN_TAG),
-                                                 user_data=udata.format(fqdn=instance['NAME'],
-                                                                        dinfo=dinfo),
-                                                 instance_type=instance['INSTANCE_TYPE'],
-                                                 network_interfaces=interface,
-                                                 block_device_map = bdm,
-                                                 instance_profile_name=VPC_TAG)
+                    # save the 'user data' script for reference
+                    # useful for lab creation/debug
+                    with open('train/logs/{0}.sh'.format(current['NAME']), 'w') as file:
+                        file.write(udata.format(fqdn=current['NAME'], dinfo=dinfo))
 
-                # get instance object
-                current = reservation.instances[0]
+                    # launch instance
+                    print "Launching instance: {0}-{1} ...".format(user, current['NAME'])
+                    reservation = conn.run_instances(image_id=AMIS[getattr(labmod, current['AMI_KEY'])],
+                                                     key_name=user + '-{0}'.format(TRAIN_TAG),
+                                                     user_data=udata.format(fqdn=current['NAME'],
+                                                                            dinfo=dinfo),
+                                                     instance_type=current['INSTANCE_TYPE'],
+                                                     network_interfaces=interface,
+                                                     block_device_map = bdm,
+                                                     instance_profile_name=VPC_TAG)
 
-                # save instance/current
-                instances.append([instance, current, user])
+                    # get instance object
+                    current_res = reservation.instances[0]
+
+                    # save instance/current
+                    instances.append([current, current_res, user])
 
     # wait for all instances to finish booting
     print "Waiting for instances to initialize ..."
@@ -231,7 +248,8 @@ def launch_instances(conn, user_vpc, lab, labmod, cfg, security_groups, subnets)
 
     # set elastic ips and tag instances
     for instance in instances:
-        _create_elastic_ips(conn, instance[0], instance[1], instance[2])
+        # disable elastic_ips (for now)
+        #_create_elastic_ips(conn, instance[0], instance[1], instance[2])
         _create_tags(conn, instance[0], instance[1], lab_tag, instance[2])
 
     final = labs.get_lab_instance_info(conn, user_vpc, lab_tag)
