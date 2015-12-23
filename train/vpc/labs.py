@@ -16,7 +16,7 @@ def _prompt_config(lab, path):
     files.sort()
 
     if len(files) == 1:
-        return files[0].strip('.py')
+        return {'1': files[0].strip('.py')},'1'
     else:
         print "Available configurations for the '{0}' lab:\n".format(lab)
         options = []
