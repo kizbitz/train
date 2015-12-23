@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Dictionaries for AWS AMI's per region"""
+"""Train AMI management"""
 
+
+# AMI's for regions
 EU_CENTRAL_1 = {
     'AMAZON-LINUX': 'ami-a6b0b7bb',
     'CENTOS-7.0': 'ami-7cc4f661',
@@ -102,3 +104,15 @@ AP_SOUTHEAST_1 = {
     'SUSE-SLES-12': 'ami-84b392d6',
     'Ubuntu-14.04': 'ami-36c6ec64',
 }
+
+
+def create_amis(conn, lab):
+    print 'create amis'
+
+
+def delete_amis(conn, lab):
+    print 'delete amis'
+
+
+def list_amis(conn):
+    print 'list amis'
