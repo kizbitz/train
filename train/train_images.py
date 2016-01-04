@@ -6,31 +6,37 @@
 import argparse
 import sys
 
-import boto
+import boto.ec2
+import boto.vpc
 
 from vpc.config import *
+import vpc.images as images
+import vpc.instances as inst
 import vpc.labs as labs
-import vpc.amis as amis
+import vpc.vpc as vpc
 
-conn = boto.connect_iam(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
+
+econn = boto.ec2.connect_to_region(AWS_REGION)
+vconn = boto.vpc.connect_to_region(AWS_REGION)
+user_vpc = vpc.get_vpc_id(vconn, TRAINER + '-{0}'.format(TRAIN_TAG))
 
 # configure parser
 parser = argparse.ArgumentParser(description='Train: AWS CLI AMI Management')
-
-parser.add_argument('-a',
-                    help='List all available labs',
-                    action='store_true', required=False)
 
 parser.add_argument('-c', metavar='<lab>',
                     help="Create lab AMI's",
                     required=False)
 
 parser.add_argument('-d', metavar='<lab>',
-                    help="Delete lab AMI's",
+                    help="Deregister lab AMI's",
                     required=False)
 
 parser.add_argument('-l',
-                    help="List all AMI's",
+                    help="list all ami's",
+                    action='store_true', required=False)
+
+parser.add_argument('-r',
+                    help="List running labs",
                     action='store_true', required=False)
 
 args = parser.parse_args()
@@ -39,14 +45,14 @@ args = parser.parse_args()
 def process():
     """Execute command/flags"""
 
-    if args.a:
-        labs.list_available_labs()
     if args.c:
-        amis.create_amis(conn, args.c)
+        images.create_amis(vconn, user_vpc, args.c)
     if args.d:
-        amis.delete_amis(conn, args.d)
+        images.delete_amis(econn, args.d)
     if args.l:
-        amis.list_amis(conn)
+        images.list_amis(econn)
+    if args.r:
+        labs.get_running_labs(vconn, user_vpc)
 
 
 if __name__ == '__main__':

@@ -14,14 +14,16 @@ import labs
 import vpc
 
 
-def _create_tags(conn, instance, current, lab_tag, user):
+def _create_tags(conn, instance, current, lab_tag, user, amibuild, amikey):
     """Create instance tags"""
 
     print "Creating instance tags for: {0}-{1}...".format(user, instance['NAME'])
     tags = {'Name': '{0}-{1}'.format(user, instance['NAME']),
             'Lab': '{0}'.format(lab_tag),
             'Trainer': '{0}'.format(TRAINER),
-            'User': '{0}'.format(user)}
+            'User': '{0}'.format(user),
+            'AMI-Build': '{0}'.format(amibuild),
+            'AMI-Key': '{0}'.format(amikey)}
 
     conn.create_tags(current.id, tags)
 
@@ -179,7 +181,9 @@ def launch_instances(conn, user_vpc, lab, labmod, cfg, security_groups, subnets)
     with open(USER_FILE) as users:
         for user in users:
             user = user.split(',')[0].strip()
+            amikey = 0
             for instance in cfg['instance']:
+                amibuild = True
                 for count in range(instance['COUNT']):
                     current = instance.copy()
                     if 'NAME' in instance:
@@ -234,7 +238,10 @@ def launch_instances(conn, user_vpc, lab, labmod, cfg, security_groups, subnets)
                     current_res = reservation.instances[0]
 
                     # save instance/current
-                    instances.append([current, current_res, user])
+                    instances.append([current, current_res, user, amibuild, amikey])
+                    amibuild = False
+
+                amikey += 1
 
     # wait for all instances to finish booting
     print "Waiting for instances to initialize ..."
@@ -250,7 +257,7 @@ def launch_instances(conn, user_vpc, lab, labmod, cfg, security_groups, subnets)
     for instance in instances:
         # disable elastic_ips (for now)
         #_create_elastic_ips(conn, instance[0], instance[1], instance[2])
-        _create_tags(conn, instance[0], instance[1], lab_tag, instance[2])
+        _create_tags(conn, instance[0], instance[1], lab_tag, instance[2], instance[3], instance[4])
 
     final = labs.get_lab_instance_info(conn, user_vpc, lab_tag)
     output_user_files(conn, user_vpc, lab_tag)
