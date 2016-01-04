@@ -34,6 +34,8 @@ def get_running_labs(conn, user_vpc):
 
 
 def create_amis(conn, user_vpc, lab_tag):
+    """Create all images for lab"""
+
     running_labs = get_running_labs(conn, user_vpc)
 
     cfg = util.read_config(LAB_DIR + lab_tag.rsplit('-', 1)[0] + '/instances.cfg')
@@ -65,6 +67,8 @@ def create_amis(conn, user_vpc, lab_tag):
 
 
 def delete_amis(conn, lab_tag):
+    """Delete all images for lab"""
+
     images = conn.get_all_images(owners = ['self'])
 
     tag = TRAINER + '-{0}-'.format(TRAIN_TAG) + '{0}-'.format(lab_tag)
@@ -78,6 +82,8 @@ def delete_amis(conn, lab_tag):
 
 
 def list_amis(conn):
+    """List all AMI's in region"""
+
     images = conn.get_all_images(owners = ['self'])
 
     print "\nAWS AMI's:\n"
