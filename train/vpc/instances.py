@@ -215,6 +215,20 @@ def launch_instances(conn, user_vpc, lab, labmod, cfg, security_groups, subnets)
                     # network interface
                     interface = vpc.create_interface(vpc.get_subnet_id(current, subnets), sids)
 
+                    # ami id
+                    ami_id = AMIS[getattr(labmod, current['AMI_KEY'])]
+
+                    # custom ami available?
+                    images = conn.get_all_images(owners = ['self'])
+                    name_tag = TRAINER + '-{0}-'.format(TRAIN_TAG) + \
+                                         '{0}-'.format(lab) + \
+                                         '{0}'.format(amikey)
+                    for image in images:
+                        if 'Lab' in image.tags:
+                            if image.tags['Name'] == name_tag:
+                                current['SCRIPT'] = 'AMIBUILD'
+                                ami_id = image.id
+
                     # user data script
                     udata = getattr(labmod, current['SCRIPT'])
 
@@ -225,7 +239,7 @@ def launch_instances(conn, user_vpc, lab, labmod, cfg, security_groups, subnets)
 
                     # launch instance
                     print "Launching instance: {0}-{1} ...".format(user, current['NAME'])
-                    reservation = conn.run_instances(image_id=AMIS[getattr(labmod, current['AMI_KEY'])],
+                    reservation = conn.run_instances(image_id=ami_id,
                                                      key_name=user + '-{0}'.format(TRAIN_TAG),
                                                      user_data=udata.format(fqdn=current['NAME'],
                                                                             dinfo=dinfo),
