@@ -54,6 +54,9 @@ USER_FILE = check_user_file(os.environ.get('USER_FILE'))
 # Tag for VPC, labs, instances, etc...
 TRAIN_TAG = check_env('TRAIN_TAG', 'train')
 
+# Template file for emails
+EMAIL_TEMPLATE = check_env('EMAIL_TEMPLATE', '/home/train/train/templates/email.py')
+
 
 # Other
 # =====

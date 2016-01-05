@@ -36,7 +36,7 @@ parser.add_argument('-i', metavar='<lab>',
                     required=False)
 
 parser.add_argument('-x', metavar='<lab>',
-                    help='Excecute a lab',
+                    help='Execute a lab',
                     required=False)
 
 parser.add_argument('-r', metavar='<lab>',
