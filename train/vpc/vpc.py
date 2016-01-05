@@ -364,6 +364,20 @@ def get_sg_ids(config, item, security_groups, VPC_TAG):
     return sgs
 
 
+def delete_amis():
+    """Delete all images"""
+
+    conn = boto.ec2.connect_to_region(AWS_REGION)
+    images = conn.get_all_images(owners = ['self'])
+
+    tag = TRAINER + '-{0}-'.format(TRAIN_TAG)
+
+    for image in images:
+        if image.name.startswith(tag):
+            print 'Degristering {0} ...'.format(image.name)
+            conn.deregister_image(image.id, delete_snapshot=True)
+
+
 def terminate_environment(conn, user_vpc):
     """Terminates all instances, vpc, environment, and related training files"""
 
@@ -373,6 +387,7 @@ def terminate_environment(conn, user_vpc):
         inst.confirm_terminated(instances)
     delete_iam_profile()
     delete_key_pairs()
+    delete_amis()
     delete_vpc(user_vpc)
     if os.path.exists('/host/share'):
         shutil.rmtree('/host/share')
