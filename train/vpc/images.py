@@ -52,6 +52,7 @@ def create_amis(conn, user_vpc, lab_tag):
     for instance in lab_instances:
         name_tag = TRAINER + '-{0}-'.format(TRAIN_TAG) + \
                              '{0}-'.format(lab_tag.rsplit('-', 1)[0]) + \
+                             '{0}-'.format(instance.tags['Script']) + \
                              '{0}'.format(instance.tags['AMI-Key'])
 
         ami = conn.create_image(instance.id, name_tag, '{0} lab AMI'.format(lab_tag.rsplit('-', 1)[0]))

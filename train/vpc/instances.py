@@ -14,7 +14,7 @@ import labs
 import vpc
 
 
-def _create_tags(conn, instance, current, lab_tag, user, amibuild, amikey):
+def _create_tags(conn, instance, current, lab_tag, user, amibuild, amikey, script):
     """Create instance tags"""
 
     print "Creating instance tags for: {0}-{1}...".format(user, instance['NAME'])
@@ -23,7 +23,8 @@ def _create_tags(conn, instance, current, lab_tag, user, amibuild, amikey):
             'Trainer': '{0}'.format(TRAINER),
             'User': '{0}'.format(user),
             'AMI-Build': '{0}'.format(amibuild),
-            'AMI-Key': '{0}'.format(amikey)}
+            'AMI-Key': '{0}'.format(amikey),
+            'Script': '{0}'.format(script)}
 
     conn.create_tags(current.id, tags)
 
@@ -165,7 +166,8 @@ def confirm_terminated(instances):
             instance.update()
 
 
-def launch_instances(conn, user_vpc, lab, labmod, cfg, security_groups, subnets):
+def launch_instances(conn, user_vpc, script, lab,
+                     labmod, cfg, security_groups, subnets):
     """Launch lab instances for each user"""
 
     instances = []
@@ -222,6 +224,7 @@ def launch_instances(conn, user_vpc, lab, labmod, cfg, security_groups, subnets)
                     images = conn.get_all_images(owners = ['self'])
                     name_tag = TRAINER + '-{0}-'.format(TRAIN_TAG) + \
                                          '{0}-'.format(lab) + \
+                                         '{0}-'.format(script) + \
                                          '{0}'.format(amikey)
                     for image in images:
                         if 'Lab' in image.tags:
@@ -252,7 +255,7 @@ def launch_instances(conn, user_vpc, lab, labmod, cfg, security_groups, subnets)
                     current_res = reservation.instances[0]
 
                     # save instance/current
-                    instances.append([current, current_res, user, amibuild, amikey])
+                    instances.append([current, current_res, user, amibuild, amikey, script])
                     amibuild = False
 
                 amikey += 1
@@ -271,7 +274,8 @@ def launch_instances(conn, user_vpc, lab, labmod, cfg, security_groups, subnets)
     for instance in instances:
         # disable elastic_ips (for now)
         #_create_elastic_ips(conn, instance[0], instance[1], instance[2])
-        _create_tags(conn, instance[0], instance[1], lab_tag, instance[2], instance[3], instance[4])
+        _create_tags(conn, instance[0], instance[1], lab_tag,
+                      instance[2], instance[3], instance[4], instance[5])
 
     final = labs.get_lab_instance_info(conn, user_vpc, lab_tag)
     output_user_files(conn, user_vpc, lab_tag)

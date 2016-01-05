@@ -193,7 +193,8 @@ def launch_lab(conn, user_vpc, lab):
     subnets = conn.get_all_subnets(filters = {'vpc-id': user_vpc.id})
 
     # launch
-    inst.launch_instances(conn, user_vpc, lab, labmod, cfg, security_groups, subnets)
+    inst.launch_instances(conn, user_vpc, prompt[answer],
+                          lab, labmod, cfg, security_groups, subnets)
     labmod.post_process()
 
 
