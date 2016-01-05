@@ -3,6 +3,7 @@
 
 """Dictionaries for AWS AMI's per region"""
 
+# AMI's for regions
 EU_CENTRAL_1 = {
     'AMAZON-LINUX': 'ami-a6b0b7bb',
     'CENTOS-7.0': 'ami-7cc4f661',

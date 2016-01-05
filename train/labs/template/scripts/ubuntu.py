@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# prompts
 PRIMARY_OS = 'Ubuntu-14.04'
 PRIMARY = '''#!/bin/sh
 #
@@ -18,6 +19,21 @@ service hostname restart
 sleep 5
 
 {dinfo}
+'''
+
+# Script to use if launching from a custom lab AMI image
+AMIBUILD = '''#!/bin/sh
+#
+FQDN="{{fqdn}}"
+
+# /etc/hostname - /etc/hosts
+sed -i "1 c\\127.0.0.1 $FQDN localhost" /etc/hosts
+echo $FQDN > /etc/hostname
+service hostname restart
+sleep 5
+
+{{dinfo}}
+reboot
 '''
 
 

@@ -12,6 +12,15 @@ def prompt_pass(question):
     else:
         return pass1
 
+
+# prompts
+ubuntu_pass = prompt_pass("Enter 'ubuntu' password for nodes: ")
+hub_name = raw_input("Enter your Docker Hub username: ")
+hub_pass = prompt_pass("Enter your Docker Hub password: ")
+hub_email = raw_input("Enter your Docker Hub email: ")
+
+
+# scripts
 PRIMARY_OS = 'Ubuntu-14.04'
 PRIMARY = '''#!/bin/sh
 #
@@ -61,10 +70,27 @@ docker pull dockerorca/dsinfo
 
 {{dinfo}}
 reboot
-'''.format(prompt_pass("Enter 'ubuntu' password for nodes: "),
-           raw_input("Enter your Docker Hub username: "),
-           prompt_pass("Enter your Docker Hub password: "),
-           raw_input("Enter your Docker Hub email: "))
+'''.format(ubuntu_pass, hub_name, hub_pass, hub_email)
+
+
+AMIBUILD = '''#!/bin/sh
+#
+FQDN="{{fqdn}}"
+
+# /etc/hostname - /etc/hosts
+sed -i "1 c\\127.0.0.1 $FQDN localhost" /etc/hosts
+echo $FQDN > /etc/hostname
+service hostname restart
+sleep 5
+
+# password authentication
+echo ubuntu:{0} | chpasswd
+sed -i 's|[#]*PasswordAuthentication no|PasswordAuthentication yes|g' /etc/ssh/sshd_config
+service ssh restart
+
+{{dinfo}}
+reboot
+'''.format(ubuntu_pass)
 
 
 def pre_process():
@@ -74,11 +100,3 @@ def pre_process():
 def post_process():
     """Executed after launching instances in AWS"""
     pass
-
-
-# Notes
-'''
-Script requires:
-    {fqdn}
-    {dinfo}
-'''
