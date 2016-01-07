@@ -9,8 +9,10 @@ import sys
 import boto.vpc
 
 from vpc.config import *
+import vpc.email as email
 import vpc.instances as inst
 import vpc.labs as labs
+import vpc.register as register
 import vpc.util as util
 import vpc.vpc as vpc
 
@@ -34,8 +36,16 @@ parser.add_argument('-i', metavar='<lab>',
                     required=False)
 
 parser.add_argument('-x', metavar='<lab>',
-                    help='Excecute a lab',
+                    help='Execute a lab',
                     required=False)
+
+parser.add_argument('-r', metavar='<lab>',
+                    help='Execute a lab in registration mode',
+                    required=False)
+
+parser.add_argument('-e',
+                    help='Email instance information and credentials to users',
+                    action='store_true', required=False)
 
 parser.add_argument('-l',
                     help='List running labs and instances in AWS',
@@ -46,7 +56,7 @@ parser.add_argument('-d', metavar='<tag>',
                     required=False)
 
 parser.add_argument('-p',
-                    help='Purge/Delete all instances in vpc',
+                    help='Purge/Delete all instances in VPC',
                     action='store_true', required=False)
 
 parser.add_argument('-t', 
@@ -79,6 +89,10 @@ def process():
 
     if args.x:
         labs.launch_lab(conn, user_vpc, args.x)
+    if args.r:
+        register.registration(conn, user_vpc, args.r)
+    if args.e:
+        email.email_credentials(conn)
     if args.l:
         labs.lab_info(conn, user_vpc)
     if args.d:

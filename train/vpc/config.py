@@ -25,9 +25,9 @@ def check_user_file(user_file):
     elif os.path.exists('/host/users.cfg'):
         return '/host/users.cfg'
     else:
-        with open('/tmp/trainer.txt', 'w') as f:
+        with open('/tmp/user.txt', 'w') as f:
             f.write(TRAINER + '\n')
-        return '/tmp/trainer.txt'
+        return '/tmp/user.txt'
 
 
 # Required environment variables
@@ -53,6 +53,9 @@ USER_FILE = check_user_file(os.environ.get('USER_FILE'))
 
 # Tag for VPC, labs, instances, etc...
 TRAIN_TAG = check_env('TRAIN_TAG', 'train')
+
+# Template file for emails
+EMAIL_TEMPLATE = check_env('EMAIL_TEMPLATE', '/home/train/train/templates/email.py')
 
 
 # Other
