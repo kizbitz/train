@@ -13,7 +13,7 @@ from config import *
 
 mandrill_client = mandrill.Mandrill(os.environ.get('MANDRILL_KEY'))
 
-def email_credentials(conn, user_vpc, args):
+def email_credentials(conn):
     """Email all user information and credentials listed in USER_FILE"""
 
     print 'Emailing user information and credentials ...'
@@ -66,7 +66,7 @@ def email_credentials(conn, user_vpc, args):
                 }
 
                 result = mandrill_client.messages.send(message=message)
-                print "Welcome email sent to attendee: '{0}' <{1}> ...".format(username, email)
+                print "Welcome email sent to: '{0}' <{1}> ...".format(username, email)
 
             except mandrill.Error, e:
                 print 'A mandrill error occurred: %s - %s' % (e.__class__, e)

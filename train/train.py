@@ -44,7 +44,7 @@ parser.add_argument('-r', metavar='<lab>',
                     required=False)
 
 parser.add_argument('-e',
-                    help='Email all users their instance information and credentials',
+                    help='Email instance information and credentials to users',
                     action='store_true', required=False)
 
 parser.add_argument('-l',
@@ -56,7 +56,7 @@ parser.add_argument('-d', metavar='<tag>',
                     required=False)
 
 parser.add_argument('-p',
-                    help='Purge/Delete all instances in vpc',
+                    help='Purge/Delete all instances in VPC',
                     action='store_true', required=False)
 
 parser.add_argument('-t', 
@@ -92,7 +92,7 @@ def process():
     if args.r:
         register.registration(conn, user_vpc, args.r)
     if args.e:
-        email.email_credentials(conn, user_vpc, args.e)
+        email.email_credentials(conn)
     if args.l:
         labs.lab_info(conn, user_vpc)
     if args.d:

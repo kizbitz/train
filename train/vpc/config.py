@@ -25,9 +25,9 @@ def check_user_file(user_file):
     elif os.path.exists('/host/users.cfg'):
         return '/host/users.cfg'
     else:
-        with open('/tmp/trainer.txt', 'w') as f:
+        with open('/tmp/user.txt', 'w') as f:
             f.write(TRAINER + '\n')
-        return '/tmp/trainer.txt'
+        return '/tmp/user.txt'
 
 
 # Required environment variables

@@ -23,7 +23,7 @@ hub_email = raw_input("Enter your Docker Hub email: ")
 # scripts
 PRIMARY_OS = 'Ubuntu-14.04'
 PRIMARY = '''#!/bin/sh
-#
+
 FQDN="{{fqdn}}"
 
 export DEBIAN_FRONTEND=noninteractive
@@ -42,19 +42,18 @@ apt-get update
 apt-get -y upgrade
 apt-get install -y git tree linux-image-extra-3.19.0-26-generic linux-image-3.19.0-26-generic
 
-## docker compose
-curl -L https://github.com/docker/compose/releases/download/1.5.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
-chmod +x /usr/local/bin/docker-compose
-
-## docker
-
-curl -sSL https://get.docker.com/ | sh
-usermod -aG docker ubuntu
-
 # password authentication
 echo ubuntu:{0} | chpasswd
 sed -i 's|[#]*PasswordAuthentication no|PasswordAuthentication yes|g' /etc/ssh/sshd_config
 service ssh restart
+
+# docker
+curl -sSL https://get.docker.com/ | sh
+usermod -aG docker ubuntu
+
+# docker compose
+curl -L https://github.com/docker/compose/releases/download/1.5.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
 
 # pull the ucp images
 docker login --username="{1}" --password="{2}" --email="{3}"

@@ -32,7 +32,7 @@ parser.add_argument('-d', metavar='<lab>',
                     required=False)
 
 parser.add_argument('-l',
-                    help="list all ami's",
+                    help="List all AMI's",
                     action='store_true', required=False)
 
 parser.add_argument('-r',
