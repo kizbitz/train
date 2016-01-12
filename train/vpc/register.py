@@ -46,7 +46,7 @@ def welcome_instructions():
 Registration Mode:
 
 - It's recommend to use a custom email template (with no prompts) that sets:
-    - from_email, from_name, and subjet variables with static entries.
+    - from_email, from_name, and subject variables with static entries.
         - See '/home/train/train/templates/email.py'
     - Specify 'EMAIL_TEMPLATE' environment variable with the path to your template
 
