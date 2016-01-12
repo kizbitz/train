@@ -1,6 +1,6 @@
 # Train
 
-Train is a set Amazon Web Services CLI tools (provided in a [Docker](www.docker.com) container) used to manage AWS users, VPC's, user keys/security, AMI's, custom labs (one or more AWS instances grouped by tag), and sets of labs to be used for demos, testing, and training.
+Train is a set Amazon Web Services CLI tools (packaged in a Docker container) used to manage AWS users, VPC's, user keys/security, AMI's, custom labs (one or more AWS instances grouped by tag), and sets of labs to be used for demos, testing, and training.
 
 - **train**: Primary tool - Manages all VPC Objects and instances
 - **train-users**: Mananges additional users allowed to use **train**
@@ -39,7 +39,7 @@ The tools provide a simple way to quickly create, manage, and destroy:
 
 ### AWS Permissions
 
-It's recommended you create a separate AWS account separate from your prod, dev, staging account. **Train** requires extensive IAM roles/permissions. (Create, list, and destroy: VPC's, EC2 instances/objects, IAM users, etc...)
+It's recommended you create a separate AWS account separate from your prod, dev, staging accounts. **Train** requires extensive IAM roles/permissions. (Create, list, and destroy: VPC's, EC2 instances/objects, IAM users, etc...)
 
 Any user created with the `train-users` tool has the following policy: https://github.com/kizbitz/train/blob/master/train/vpc/users.py#L12-L41
 
@@ -595,8 +595,8 @@ The alternative method of registration is using the `-r` flag to launch a lab.
 
 This mode:
 
-- Prompts for a welome message
-- Displays the welome message and prompts for an email
+- Prompts for a welcome message
+- Displays the welcome message and prompts for an email
 - Creates a username from the email and creates the key pairs
 - Launches the lab and then emails the user the connection info and keys
 
@@ -819,6 +819,11 @@ jbaker-demo:us-east-1:~$
 ```
 
 **WARNING:** Security for your environment is **your** responsibility. Users created with this tool have a lot of permissions. Remember to audit your users and rotate keys/passwords to keep your environment secure.
+
+### Custom Labs
+
+- A template lab is provided that you can use as a starting base.
+- All current labs for reference: https://github.com/kizbitz/train/tree/master/train/labs
 
 ### Finally
 
