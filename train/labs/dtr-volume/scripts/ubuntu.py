@@ -18,10 +18,18 @@ service hostname restart
 sleep 5
 
 # packages
-curl -s https://packagecloud.io/install/repositories/Docker/cs-public/script.deb.sh | sudo bash
-sleep 5
-apt-get install -y tree xfsprogs linux-image-extra-$(uname -r)
-apt-get install -y docker-engine-cs
+apt-get update
+apt-get -y upgrade
+apt-get install -y git tree jq xfsprogs linux-image-extra-4.2.0-23-generic linux-image-4.2.0.23-generic
+
+# docker cs release
+wget -qO- 'https://pgp.mit.edu/pks/lookup?op=get&search=0xee6d536cf7dc86e2d7d56f59a178ac6c6238f52e' | sudo apt-key add --import
+apt-get update
+apt-get install -y apt-transport-https
+echo "deb https://packages.docker.com/1.9/apt/repo ubuntu-trusty main" | tee /etc/apt/sources.list.d/docker.list
+apt-get update
+apt-get install -y docker-engine
+
 usermod -aG docker ubuntu
 
 # block device info
