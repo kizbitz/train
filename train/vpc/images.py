@@ -76,7 +76,7 @@ def delete_amis(conn, lab_tag):
 
     for image in images:
         if image.name.startswith(tag):
-            print 'Degristering {0} ...'.format(image.name)
+            print 'Deregistering {0} ...'.format(image.name)
             conn.deregister_image(image.id, delete_snapshot=True)
 
     print "Completed ..."
