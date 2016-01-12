@@ -752,9 +752,13 @@ AWS AMI's:
 jbaker-demo:us-east-1:~$
 ```
 
-Deleting an AMI:
+Deregistering an AMI:
 
 ```
+jbaker-demo:us-east-1:~$ train-images -d dtr-volume
+Degristering jbaker-demo-dtr-volume-ubuntu-0 ...
+Completed ...
+jbaker-demo:us-east-1:~$
 ```
 
 ## train-users
