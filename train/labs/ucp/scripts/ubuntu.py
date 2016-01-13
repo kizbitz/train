@@ -55,6 +55,8 @@ echo "deb https://packages.docker.com/1.9/apt/repo ubuntu-trusty main" | tee /et
 apt-get update
 apt-get install -y docker-engine
 
+usermod -aG docker ubuntu
+
 # docker compose
 curl -L https://github.com/docker/compose/releases/download/1.5.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
