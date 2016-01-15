@@ -222,7 +222,7 @@ def launch_instances(conn, user_vpc, script, lab,
 
                     # custom ami available?
                     images = conn.get_all_images(owners = ['self'])
-                    name_tag = TRAINER + '-{0}-'.format(TRAIN_TAG) + \
+                    name_tag = TRAINER + '-{0}-'.format(VPC) + \
                                          '{0}-'.format(lab) + \
                                          '{0}-'.format(script) + \
                                          '{0}'.format(amikey)
@@ -243,7 +243,7 @@ def launch_instances(conn, user_vpc, script, lab,
                     # launch instance
                     print "Launching instance: {0}-{1} ...".format(user, current['NAME'])
                     reservation = conn.run_instances(image_id=ami_id,
-                                                     key_name=user + '-{0}'.format(TRAIN_TAG),
+                                                     key_name=user + '-{0}'.format(VPC),
                                                      user_data=udata.format(fqdn=current['NAME'],
                                                                             dinfo=dinfo),
                                                      instance_type=current['INSTANCE_TYPE'],

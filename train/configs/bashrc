@@ -8,4 +8,4 @@ alias ls='ls $LS_OPTIONS'
 alias ll='ls $LS_OPTIONS -l'
 alias la='ls $LS_OPTIONS -lA'
 
-export PS1="\$TRAINER-\$TRAIN_TAG:\$AWS_REGION:\w$ "
+export PS1="\$TRAINER-\$VPC:\$AWS_REGION:\w$ "

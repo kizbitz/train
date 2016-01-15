@@ -52,7 +52,7 @@ LAB_DIR = check_env('LAB_DIR', '/home/train/train/labs/')
 USER_FILE = check_user_file(os.environ.get('USER_FILE'))
 
 # Tag for VPC, labs, instances, etc...
-TRAIN_TAG = check_env('TRAIN_TAG', 'train')
+VPC = check_env('VPC', 'train')
 
 # Template file for emails
 EMAIL_TEMPLATE = check_env('EMAIL_TEMPLATE', '/home/train/train/templates/email.py')
@@ -65,10 +65,10 @@ EMAIL_TEMPLATE = check_env('EMAIL_TEMPLATE', '/home/train/train/templates/email.
 AMIS = getattr(amis, AWS_REGION.upper().replace('-', '_'))
 
 # AWS IAM Profile
-IAM_PROFILE = TRAINER + '-{0}'.format(TRAIN_TAG)
+IAM_PROFILE = TRAINER + '-{0}'.format(VPC)
 
 # AWS Gateway
-IGW = TRAINER + '-{0}-igw'.format(TRAIN_TAG)
+IGW = TRAINER + '-{0}-igw'.format(VPC)
 
 # IAM Policy
 POLICY = """{
@@ -88,16 +88,16 @@ POLICY = """{
 
 
 # AWS Network ACL
-NETWORK_ACL = TRAINER + '-{0}-network-acl'.format(TRAIN_TAG)
+NETWORK_ACL = TRAINER + '-{0}-network-acl'.format(VPC)
 
 # AWS Route Table
-ROUTE_TABLE = TRAINER + '-{0}-route-table'.format(TRAIN_TAG)
+ROUTE_TABLE = TRAINER + '-{0}-route-table'.format(VPC)
 
 # AWS VPC CIDR
 VPC_CIDR = "10.0.0.0/16"
 
 # AWS VPC Tag
-VPC_TAG = TRAINER + '-{0}'.format(TRAIN_TAG)
+VPC_TAG = TRAINER + '-{0}'.format(VPC)
 
 # AWS Zones
 ZONES=['a', 'b', 'c', 'd', 'e', 'f']

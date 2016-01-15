@@ -81,9 +81,9 @@ def process():
 
     # vpc and connection required for the following options...
     conn = boto.vpc.connect_to_region(AWS_REGION)
-    user_vpc = vpc.get_vpc_id(conn, TRAINER + '-{0}'.format(TRAIN_TAG))
+    user_vpc = vpc.get_vpc_id(conn, TRAINER + '-{0}'.format(VPC))
     if not user_vpc:
-        print "\n'{0}' VPC doesn't exist.".format(TRAINER + '-{0}'.format(TRAIN_TAG))
+        print "\n'{0}' VPC doesn't exist.".format(TRAINER + '-{0}'.format(VPC))
         print "Create it by running the command: train -v\n"
         sys.exit(1)
 
