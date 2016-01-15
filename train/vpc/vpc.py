@@ -36,7 +36,7 @@ def _create_vpc(conn):
 def delete_vpc(user_vpc):
     """Delete AWS VPC"""
 
-    print "Deleting VPC: {0} ...".format(TRAINER + '-{0}'.format(TRAIN_TAG))
+    print "Deleting VPC: {0} ...".format(TRAINER + '-{0}'.format(VPC))
     conn = boto.vpc.connect_to_region(AWS_REGION)
 
     subnets = conn.get_all_subnets(filters = {'vpc-id': user_vpc.id})
@@ -85,7 +85,7 @@ def _create_subnets(conn, vpc, route_table):
 
     current_ip = 0
     for zone in zones:
-        tag = TRAINER + '-{0}-'.format(TRAIN_TAG) + zone
+        tag = TRAINER + '-{0}-'.format(VPC) + zone
         print "10.0.{0}.0/20".format(current_ip)
 
         print 'Creating subnet: {0} ...'.format(tag)
@@ -228,7 +228,7 @@ def create_iam_profile():
 
     conn = boto.connect_iam()
     instance_profile = conn.create_instance_profile(IAM_PROFILE)
-    role = conn.create_role(TRAINER + '-{0}'.format(TRAIN_TAG))
+    role = conn.create_role(TRAINER + '-{0}'.format(VPC))
     conn.add_role_to_instance_profile(IAM_PROFILE, IAM_PROFILE)
     conn.put_role_policy(IAM_PROFILE, 'EC2-Describe', POLICY)
 
@@ -266,14 +266,14 @@ def create_key_pairs():
                 else:
                     continue
 
-            print "Creating key pair: {0} ...".format(user + '-{0}'.format(TRAIN_TAG))
-            key = conn.create_key_pair(user + '-{0}'.format(TRAIN_TAG))
+            print "Creating key pair: {0} ...".format(user + '-{0}'.format(VPC))
+            key = conn.create_key_pair(user + '-{0}'.format(VPC))
             key.save('/host/share/{0}'.format(user))
 
             # Generate ppk for Windows/PuTTY users
-            os.system("puttygen /host/share/{0}/{0}-{1}.pem -o /host/share/{0}/{0}-{1}.ppk -O private".format(user, TRAIN_TAG))
+            os.system("puttygen /host/share/{0}/{0}-{1}.pem -o /host/share/{0}/{0}-{1}.ppk -O private".format(user, VPC))
 
-            print "Key '{0}' created and saved ...".format(user + '-{0}'.format(TRAIN_TAG))
+            print "Key '{0}' created and saved ...".format(user + '-{0}'.format(VPC))
 
 
 def check_key_pair(user):
@@ -281,9 +281,9 @@ def check_key_pair(user):
 
     conn = _connect()
 
-    print "Checking for existing key pair: {0} ...".format(user + '-{0}'.format(TRAIN_TAG))
+    print "Checking for existing key pair: {0} ...".format(user + '-{0}'.format(VPC))
     conn = boto.ec2.connect_to_region(AWS_REGION)
-    if conn.get_all_key_pairs(filters = {'key-name': user + '-{0}'.format(TRAIN_TAG)}):
+    if conn.get_all_key_pairs(filters = {'key-name': user + '-{0}'.format(VPC)}):
         return True
 
 
@@ -294,9 +294,9 @@ def delete_key_pair(user):
 
     print "Deleting key pair for user: {0} ...".format(user.strip())
     conn = _connect()
-    conn.delete_key_pair(user + '-{0}'.format(TRAIN_TAG))
-    if os.path.exists('/host/share/{0}/{1}'.format(user, user + '-{0}.pem'.format(TRAIN_TAG))):
-        os.remove('/host/share/{0}/{1}'.format(user, user + '-{0}.pem'.format(TRAIN_TAG)))
+    conn.delete_key_pair(user + '-{0}'.format(VPC))
+    if os.path.exists('/host/share/{0}/{1}'.format(user, user + '-{0}.pem'.format(VPC))):
+        os.remove('/host/share/{0}/{1}'.format(user, user + '-{0}.pem'.format(VPC)))
 
 
 def delete_key_pairs():
@@ -308,9 +308,9 @@ def delete_key_pairs():
         for user in users:
             user = user.split(',')[0].strip()
             print "Deleting key pair for user: {0} ...".format(user.strip())
-            conn.delete_key_pair(user + '-{0}'.format(TRAIN_TAG))
-            if os.path.exists('/host/share/{0}/{1}'.format(user, user + '-{0}.pem'.format(TRAIN_TAG))):
-                os.remove('/host/share/{0}/{1}'.format(user, user + '-{0}.pem'.format(TRAIN_TAG)))
+            conn.delete_key_pair(user + '-{0}'.format(VPC))
+            if os.path.exists('/host/share/{0}/{1}'.format(user, user + '-{0}.pem'.format(VPC))):
+                os.remove('/host/share/{0}/{1}'.format(user, user + '-{0}.pem'.format(VPC)))
 
 
 def get_vpc_id(conn, vpc_tag):
@@ -370,7 +370,7 @@ def delete_amis():
     conn = boto.ec2.connect_to_region(AWS_REGION)
     images = conn.get_all_images(owners = ['self'])
 
-    tag = TRAINER + '-{0}-'.format(TRAIN_TAG)
+    tag = TRAINER + '-{0}-'.format(VPC)
 
     for image in images:
         if image.name.startswith(tag):

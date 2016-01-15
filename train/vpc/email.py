@@ -26,10 +26,10 @@ def email_credentials(conn):
             email = line.split(',')[1].strip()
 
             # keyfile
-            with open ('/host/share/{0}/{0}-{1}.pem'.format(username, TRAIN_TAG), "r") as f:
+            with open ('/host/share/{0}/{0}-{1}.pem'.format(username, VPC), "r") as f:
                 keyfile = base64.b64encode(f.read())
             # ppkfile
-            with open ('/host/share/{0}/{0}-{1}.ppk'.format(username, TRAIN_TAG), "r") as f:
+            with open ('/host/share/{0}/{0}-{1}.ppk'.format(username, VPC), "r") as f:
                 ppkfile = base64.b64encode(f.read())
 
             # instances

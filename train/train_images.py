@@ -18,7 +18,7 @@ import vpc.vpc as vpc
 
 econn = boto.ec2.connect_to_region(AWS_REGION)
 vconn = boto.vpc.connect_to_region(AWS_REGION)
-user_vpc = vpc.get_vpc_id(vconn, TRAINER + '-{0}'.format(TRAIN_TAG))
+user_vpc = vpc.get_vpc_id(vconn, TRAINER + '-{0}'.format(VPC))
 
 # configure parser
 parser = argparse.ArgumentParser(description='Train: AWS CLI AMI Management')

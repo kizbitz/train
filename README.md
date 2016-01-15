@@ -78,7 +78,7 @@ LAB_DIR=<lab-directory>
 USER_FILE=<config-file>
 
 # Tag for VPC, labs, instances, etc... (Recommended for different environments)
-TRAIN_TAG=<tag>
+VPC=<vpc-tag>
 
 # Template file for registration emails
 EMAIL_TEMPLATE=<path-to-template-file>
@@ -118,7 +118,7 @@ Create a Docker environment file with required environment variables:
 vagrant@dockertest:~/sandbox$ vim train.env
 vagrant@dockertest:~/sandbox$ cat train.env
 TRAINER=jbaker
-TRAIN_TAG=demo
+VPC=demo
 AWS_REGION=us-east-1
 AWS_ACCESS_KEY_ID=<your-aws-access-key>
 AWS_SECRET_ACCESS_KEY=<your-aws-secret-access-key>

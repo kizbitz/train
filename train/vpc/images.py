@@ -50,7 +50,7 @@ def create_amis(conn, user_vpc, lab_tag):
 
     print "Creating AMI's for lab: {0}".format(lab_tag)
     for instance in lab_instances:
-        name_tag = TRAINER + '-{0}-'.format(TRAIN_TAG) + \
+        name_tag = TRAINER + '-{0}-'.format(VPC) + \
                              '{0}-'.format(lab_tag.rsplit('-', 1)[0]) + \
                              '{0}-'.format(instance.tags['Script']) + \
                              '{0}'.format(instance.tags['AMI-Key'])
@@ -72,7 +72,7 @@ def delete_amis(conn, lab_tag):
 
     images = conn.get_all_images(owners = ['self'])
 
-    tag = TRAINER + '-{0}-'.format(TRAIN_TAG) + '{0}-'.format(lab_tag)
+    tag = TRAINER + '-{0}-'.format(VPC) + '{0}-'.format(lab_tag)
 
     for image in images:
         if image.name.startswith(tag):
