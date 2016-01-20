@@ -2,13 +2,11 @@
 # -*- coding: utf-8 -*-
 
 # prompts
-ubuntu_pass = raw_input("Enter password for 'ubuntu' user: ")
-
-# scripts
 PRIMARY_OS = 'Ubuntu-14.04'
+
 PRIMARY = '''#!/bin/sh
-#
-FQDN="{{fqdn}}"
+
+FQDN="{fqdn}"
 
 export DEBIAN_FRONTEND=noninteractive
 
@@ -22,13 +20,13 @@ sleep 5
 
 apt-get update
 apt-get -y upgrade
-apt-get install -y git tree jq linux-image-extra-4.2.0-23-generic linux-image-4.2.0.23-generic
+apt-get install -y git tree jq linux-image-extra-3.19.0-26-generic linux-image-3.19.0-26-generic
 
 # compose
-curl -L https://github.com/docker/compose/releases/download/1.5.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+curl -L https://github.com/docker/compose/releases/download/1.5.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 
-# docker cs release
+# docker cs official release
 wget -qO- 'https://pgp.mit.edu/pks/lookup?op=get&search=0xee6d536cf7dc86e2d7d56f59a178ac6c6238f52e' | sudo apt-key add --import
 apt-get update
 apt-get install -y apt-transport-https
@@ -37,11 +35,6 @@ apt-get update
 apt-get install -y docker-engine
 
 usermod -aG docker ubuntu
-
-# password authentication
-echo ubuntu:{0} | chpasswd
-sed -i 's|[#]*PasswordAuthentication no|PasswordAuthentication yes|g' /etc/ssh/sshd_config
-service ssh restart
 
 # cleanup.sh
 # ==========
@@ -70,10 +63,9 @@ rm -r /var/lib/docker
 rm /etc/docker/key.json
 cp /etc/default/docker /etc/default/docker.bak
 
-{{dinfo}}
+{dinfo}
 reboot
-'''.format(ubuntu_pass)
-
+'''
 
 # Script to use if launching from a custom lab AMI image
 AMIBUILD = '''#!/bin/sh
@@ -86,18 +78,9 @@ echo $FQDN > /etc/hostname
 service hostname restart
 sleep 5
 
-# password authentication
-echo ubuntu:{0} | chpasswd
-sed -i 's|[#]*PasswordAuthentication no|PasswordAuthentication yes|g' /etc/ssh/sshd_config
-service ssh restart
-
-service docker stop
-rm -r /var/lib/docker
-rm /etc/docker/key.json
-
 {{dinfo}}
 reboot
-'''.format(ubuntu_pass)
+'''
 
 
 def pre_process():
