@@ -39,7 +39,7 @@ def check_email_template(VPC, template):
     if template:
         return template
     elif os.path.exists('/host/{0}/email.py'.format(VPC)):
-        return '/host/{0}/email.py'
+        return '/host/{0}/email.py'.format(VPC)
     else:
         return '/home/train/train/templates/email.py'
 
