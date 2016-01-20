@@ -6,6 +6,7 @@ Train is a set Amazon Web Services CLI tools (packaged in a Docker container) us
 - **train-users**: Mananges additional users allowed to use **train**
 - **train-images**: Manages associated lab AMI's
 
+---
 
 The tools provide a simple way to quickly create, manage, and destroy:
 
@@ -66,7 +67,7 @@ When using the bulk registration feature or registration mode a [Mandrill API Ke
 MANDRILL_KEY=<mandrill-key>
 ```
 
-Note: TRAINER is used for tagging VCP objects only. Not tied to any permissions.
+Note: TRAINER (username) is only used for tagging VCP objects only. It is not tied to any permissions.
 
 #### Optional Environment Variables
 
@@ -81,12 +82,12 @@ USER_FILE=<config-file>
 VPC=<vpc-tag>
 
 # Template file for registration emails
-EMAIL_TEMPLATE=<path-to-template-file>
+EMAIL_TEMPLATE=<path-to-template-file-in-container>
 ```
 
 ### Host Volume
 
-A local host volume needs to be mounted inside the container to `/host` when running the container. The scripts will output all user keys and user instance information into '/host' and a '/host/share' directory.
+A local host volume needs to be mounted inside the container to `/host` when running the container. The scripts will output all user keys and user instance information into a `/host/<VPC>` directory.
 
 ## Walk-through - Personal Use
 
@@ -136,19 +137,25 @@ vagrant@dockertest:~/sandbox$ docker run -ti --rm --env-file='train.env' -v $(pw
 jbaker-demo:us-east-1:~$
 ```
 
+After entering the container note that the prompt is displaying the: **TRAINER-VPC:AWS_REGION** environment variables.
+
+```
+jbaker-demo:us-east-1:~$
+```
+
 Executing `train` without any arguments will display help:
 
 ```
 jbaker-demo:us-east-1:~$ train
-usage: train [-h] [-k] [-v] [-a] [-i <lab>] [-x <lab>] [-r <lab>] [-e] [-l]
+usage: train [-h] [-v] [-k] [-a] [-i <lab>] [-x <lab>] [-r <lab>] [-e] [-l]
              [-d <tag>] [-p] [-t]
 
 Train: AWS CLI Tool
 
 optional arguments:
   -h, --help  show this help message and exit
-  -k          Create AWS key pairs
   -v          Create AWS VPC
+  -k          Create AWS key pairs
   -a          List all available labs
   -i <lab>    View description for an available lab
   -x <lab>    Execute a lab
@@ -161,13 +168,10 @@ optional arguments:
 jbaker-demo:us-east-1:~$
 ```
 
-Generate your key pair (from the TRAINER environment variable) and create a new VPC with required VPC objects using the `-k` and `-v` flags:
+Create the new VPC (along with the required VCP objects) and generate your key pair (from the TRAINER environment variable) using the `-v` and `-k` flags:
 
 ```
-jbaker-demo:us-east-1:~$ train -kv
-Checking for existing key pair: jbaker-demo ...
-Creating key pair: jbaker-demo ...
-Key 'jbaker-demo' created and saved ...
+jbaker-demo:us-east-1:~$ train -vk
 Creating AWS VPC ...
 Creating IAM Profile: jbaker-demo ...
 IAM profile, role, and policy created ...
@@ -185,20 +189,26 @@ Creating subnet: jbaker-demo-us-east-1d ...
 Creating subnet: jbaker-demo-us-east-1e ...
 Configuring default security group ...
 Adding default egress rules ...
-jbaker-demo:us-east-1:~$
+Checking for existing key pair: jbaker-demo ...
+Creating key pair: jbaker-demo ...
+Key 'jbaker-demo' created and saved ...
 ```
 
-Key pairs (*.pem for *nix users and a *.pem for Windows/PuTTY users) are are created and saved in a `/host/share/<username>` directory.
+Key pairs (*.pem for *nix users and a *.pem for Windows/PuTTY users) are are created and saved in a `/host/<VPC>/users/<username>` directory.
+
+The **key-pairs.txt** file is used to track all key pairs created for this VPC. **users.cfg** is covered later in the **Registration** section.
 
 ```
-jbaker-demo:us-east-1:~$ tree /host/share
-/host/share
-└── jbaker
-    ├── jbaker-demo.pem
-    └── jbaker-demo.ppk
-
-1 directory, 2 files
-jbaker-demo:us-east-1:~$
+jbaker-demo:us-east-1:~$ tree /host
+/host
+├── demo
+│   ├── key-pairs.txt
+│   ├── users
+│   │   └── jbaker
+│   │       ├── jbaker-demo.pem
+│   │       └── jbaker-demo.ppk
+│   └── users.cfg
+└── train.env
 ```
 
 List available labs:
@@ -246,6 +256,10 @@ Waiting for instances to initialize ...
 Waiting for instance 'jbaker-dtr' to initialize ...
 Waiting for instance 'jbaker-dtr' to initialize ...
 Waiting for instance 'jbaker-dtr' to initialize ...
+Waiting for instance 'jbaker-dtr' to initialize ...
+Waiting for instance 'jbaker-dtr' to initialize ...
+Waiting for instance 'jbaker-dtr' to initialize ...
+Waiting for instance 'jbaker-dtr' to initialize ...
 Creating instance tags for: jbaker-dtr...
 
 Lab 'dtr-volume' launched with tag 'dtr-volume-1':
@@ -255,11 +269,9 @@ Lab 'dtr-volume' launched with tag 'dtr-volume-1':
     Name:         jbaker-dtr
       Lab:        dtr-volume-1
       Region:     us-east-1
-      IP:         52.90.115.110
-      Private IP: 10.0.7.235
-      Public DNS: ec2-52-90-115-110.compute-1.amazonaws.com
-
-jbaker-demo:us-east-1:~$
+      IP:         54.84.220.19
+      Private IP: 10.0.14.143
+      Public DNS: ec2-54-84-220-19.compute-1.amazonaws.com
 ```
 
 Launch another lab:
@@ -279,36 +291,37 @@ Available configurations for the 'base' lab:
  9) suse-sles-12
  10) ubuntu
 
+
 Which configuration would you like to execute?: 10
 How many instances would you like to launch: 2
-Enter a custom AWS 'Name' tag: ubuntu-demo
+Enter a custom AWS 'Name' tag: demo
 Launching 'base' lab with tag: base-1
-Launching instance: jbaker-ubuntu-demo-0 ...
-Launching instance: jbaker-ubuntu-demo-1 ...
+Launching instance: jbaker-demo-0 ...
+Launching instance: jbaker-demo-1 ...
 Waiting for instances to initialize ...
-Waiting for instance 'jbaker-ubuntu-demo-0' to initialize ...
-Waiting for instance 'jbaker-ubuntu-demo-0' to initialize ...
-Waiting for instance 'jbaker-ubuntu-demo-0' to initialize ...
-Creating instance tags for: jbaker-ubuntu-demo-0...
-Creating instance tags for: jbaker-ubuntu-demo-1...
+Waiting for instance 'jbaker-demo-0' to initialize ...
+Waiting for instance 'jbaker-demo-0' to initialize ...
+Waiting for instance 'jbaker-demo-1' to initialize ...
+Creating instance tags for: jbaker-demo-0...
+Creating instance tags for: jbaker-demo-1...
 
 Lab 'base' launched with tag 'base-1':
 
   Instances:
 
-    Name:         jbaker-ubuntu-demo-0
+    Name:         jbaker-demo-0
       Lab:        base-1
       Region:     us-east-1
-      IP:         52.91.204.163
-      Private IP: 10.0.1.109
-      Public DNS: ec2-52-91-204-163.compute-1.amazonaws.com
+      IP:         54.175.198.174
+      Private IP: 10.0.7.117
+      Public DNS: ec2-54-175-198-174.compute-1.amazonaws.com
 
-    Name:         jbaker-ubuntu-demo-1
+    Name:         jbaker-demo-1
       Lab:        base-1
       Region:     us-east-1
-      IP:         54.173.148.253
-      Private IP: 10.0.19.225
-      Public DNS: ec2-54-173-148-253.compute-1.amazonaws.com
+      IP:         52.23.199.253
+      Private IP: 10.0.20.29
+      Public DNS: ec2-52-23-199-253.compute-1.amazonaws.com
 
 jbaker-demo:us-east-1:~$
 ```
@@ -324,44 +337,49 @@ Running labs:
 
 Instances running in lab 'base-1':
 
-    Name:         jbaker-ubuntu-demo-0
+    Name:         jbaker-demo-0
       Lab:        base-1
       Region:     us-east-1
-      IP:         52.91.204.163
-      Private IP: 10.0.1.109
-      Public DNS: ec2-52-91-204-163.compute-1.amazonaws.com
+      IP:         54.175.198.174
+      Private IP: 10.0.7.117
+      Public DNS: ec2-54-175-198-174.compute-1.amazonaws.com
 
-    Name:         jbaker-ubuntu-demo-1
+    Name:         jbaker-demo-1
       Lab:        base-1
       Region:     us-east-1
-      IP:         54.173.148.253
-      Private IP: 10.0.19.225
-      Public DNS: ec2-54-173-148-253.compute-1.amazonaws.com
+      IP:         52.23.199.253
+      Private IP: 10.0.20.29
+      Public DNS: ec2-52-23-199-253.compute-1.amazonaws.com
 
 Instances running in lab 'dtr-volume-1':
 
     Name:         jbaker-dtr
       Lab:        dtr-volume-1
       Region:     us-east-1
-      IP:         52.90.115.110
-      Private IP: 10.0.7.235
-      Public DNS: ec2-52-90-115-110.compute-1.amazonaws.com
+      IP:         54.84.220.19
+      Private IP: 10.0.14.143
+      Public DNS: ec2-54-84-220-19.compute-1.amazonaws.com
 
 jbaker-demo:us-east-1:~$
 ```
 
-Lab/Instance information is also saved in text files in: `/host/share/<user>`
+Lab/Instance information is also saved in text files in the `/host/<VCP>/users/<user>` directory
 
 ```
-jbaker-demo:us-east-1:~$ tree /host/share
-/host/share
-└── jbaker
-    ├── base-1.txt
-    ├── dtr-volume-1.txt
-    ├── jbaker-demo.pem
-    └── jbaker-demo.ppk
+jbaker-demo:us-east-1:~$ tree /host
+/host
+├── demo
+│   ├── key-pairs.txt
+│   ├── users
+│   │   └── jbaker
+│   │       ├── base-1.txt
+│   │       ├── dtr-volume-1.txt
+│   │       ├── jbaker-demo.pem
+│   │       └── jbaker-demo.ppk
+│   └── users.cfg
+└── train.env
 
-1 directory, 4 files
+3 directories, 7 files
 jbaker-demo:us-east-1:~$
 ```
 
@@ -427,18 +445,37 @@ In addition to all of the above functionality, **train** provides two **registra
 
 ### Bulk Registration
 
-To use the bulk registration mode you pass **train** a user config file. By default this is /host/users.cfg or optionally set a file path with the USER_FILE environment variable: https://github.com/kizbitz/train/blob/master/train/vpc/config.py#L52
+To use the bulk registration mode you create a user config file. By default, **train** will use a user config file:
 
-Create a **users.cfg** file with a list of usernames and emails that will be used when creating key pairs and launching any lab instances.
+- `/host/<VPC>/users.cfg`
+
+Or, you can optionally set a custom file path with the USER_FILE environment variable: https://github.com/kizbitz/train/blob/master/train/vpc/config.py#L52
+
+Create a **users.cfg** file in your the root of your VPC directory with a list of usernames and emails that will be used when creating key pairs and launching any lab instances.
 
 - One user per line in the format: `<username>,<email>`
 
 ```
-vagrant@dockertest:~/sandbox$ vim users.cfg
-vagrant@dockertest:~/sandbox$ cat users.cfg
+vagrant@docker:~/sandbox$ tree
+.
+├── demo
+│   ├── key-pairs.txt
+│   ├── users
+│   │   └── jbaker
+│   │       ├── base-1.txt
+│   │       ├── dtr-volume-1.txt
+│   │       ├── jbaker-demo.pem
+│   │       └── jbaker-demo.ppk
+│   └── users.cfg
+└── train.env
+
+3 directories, 7 files
+
+vagrant@docker:~/sandbox$ vim demo/users.cfg
+vagrant@docker:~/sandbox$ cat demo/users.cfg
 jbaker,jbaker@docker.com
 mrcotton,mrcotton@simpledove.com
-vagrant@dockertest:~/sandbox$
+vagrant@docker:~/sandbox$
 ```
 
 **Note**: This example only has two users specified but there is no limit except for your AWS limits.
@@ -446,26 +483,20 @@ vagrant@dockertest:~/sandbox$
 Run the container with the environment file and mount a host volume:
 
 ```
-vagrant@dockertest:~/sandbox$ ls -al
+vagrant@docker:~/sandbox$ ls -al
 total 16
-drwxrwxr-x  2 vagrant vagrant 4096 Jan 12 12:08 .
-drwxr-xr-x 10 vagrant vagrant 4096 Jan 12 12:08 ..
--rw-------  1 vagrant vagrant  219 Jan 12 10:46 train.env
--rw-rw-r--  1 vagrant vagrant   58 Jan 12 12:08 users.cfg
-vagrant@dockertest:~/sandbox$ docker run -ti --rm --env-file='train.env' -v $(pwd):/host kizbitz/train
-jbaker-demo:us-east-1:~$
+drwxr-xr-x 3 vagrant vagrant 4096 Jan 20 11:18 .
+drwxr-xr-x 5 vagrant vagrant 4096 Jan 20 11:40 ..
+drwxr-xr-x 3 vagrant vagrant 4096 Jan 20 11:40 demo
+-rw------- 1 vagrant vagrant  183 Jan 20 11:18 train.env
+vagrant@docker:~/sandbox$ docker run -ti --rm --env-file='train.env' -v $(pwd):/host kizbitz/train
+jbaker-dev:us-east-1:~$
 ```
 
 Create all keys and VPC:
 
 ```
-jbaker-demo:us-east-1:~$ train -kv
-Checking for existing key pair: jbaker-demo ...
-Creating key pair: jbaker-demo ...
-Key 'jbaker-demo' created and saved ...
-Checking for existing key pair: mrcotton-demo ...
-Creating key pair: mrcotton-demo ...
-Key 'mrcotton-demo' created and saved ...
+jbaker-demo:us-east-1:~$ train -vk
 Creating AWS VPC ...
 Creating IAM Profile: jbaker-demo ...
 IAM profile, role, and policy created ...
@@ -483,7 +514,12 @@ Creating subnet: jbaker-demo-us-east-1d ...
 Creating subnet: jbaker-demo-us-east-1e ...
 Configuring default security group ...
 Adding default egress rules ...
-jbaker-demo:us-east-1:~$
+Checking for existing key pair: jbaker-demo ...
+Creating key pair: jbaker-demo ...
+Key 'jbaker-demo' created and saved ...
+Checking for existing key pair: mrcotton-demo ...
+Creating key pair: mrcotton-demo ...
+Key 'mrcotton-demo' created and saved ...
 ```
 
 Launch a lab for all users:
@@ -575,7 +611,9 @@ Note:
 
 - Requires a MANDRILL_KEY - See requirements section above.
 - Recommended that you use a customized email template. See: https://github.com/kizbitz/train/blob/master/train/vpc/config.py#L58
-  - T default template used is located here: https://github.com/kizbitz/train/blob/master/train/templates/email.py 
+  - By default **train** will look for an email template in: `/host/<VPC>/email.py`
+  - If `/host/<VPC>/email` does not exist the template that will be used is located here: https://github.com/kizbitz/train/blob/master/train/templates/email.py
+  - You can also specify the email template to use with an `EMAIL_TEMPLATE` environment variable. See: https://github.com/kizbitz/train/blob/master/train/vpc/config.py#L58
 
 ```
 jbaker-demo:us-east-1:~$ train -e
@@ -824,6 +862,22 @@ jbaker-demo:us-east-1:~$
 
 - A template lab is provided that you can use as a starting base.
 - All current labs for reference: https://github.com/kizbitz/train/tree/master/train/labs
+
+### Tips
+
+If you switch VPCs often you can create a helper function and pass in your VPC for launching your container.
+
+Example function for Bash (~/.bashrc on your Docker host): 
+
+```
+function train {
+  if [ -z ${1} ]; then
+    docker run -ti --rm --env-file='train.env' -v $(pwd):/host kizbitz/train
+  else
+    docker run -ti --rm --env-file='train.env' -e VPC=${1} -v $(pwd):/host kizbitz/train
+  fi
+}
+```
 
 ### Finally
 

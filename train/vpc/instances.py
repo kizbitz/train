@@ -146,9 +146,9 @@ def terminate_all_instances(conn, user_vpc):
         print "\nTerminate request sent for all instances ...\n"
 
         # remove all local user lab/instance details text files
-        with open(USER_FILE) as users:
+        with open('/host/{0}/key-pairs.txt'.format(VPC)) as users:
             for user in users:
-                for f in glob.glob('/host/{0}/users/{1}/*.txt'.format(VPC, user.strip())):
+                for f in glob.glob('/host/{0}/users/{1}/*.txt'.format(VPC, user.split('-')[0])):
                     os.remove(f)
 
         return instances
