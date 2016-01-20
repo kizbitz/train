@@ -11,15 +11,14 @@ import mandrill
 
 from config import *
 
-if os.environ.get("MANDRILL_KEY"):
-    mandrill_client = mandrill.Mandrill(os.environ.get('MANDRILL_KEY'))
-
 def email_credentials(conn):
     """Email all user information and credentials listed in USER_FILE"""
 
     if not os.environ.get("MANDRILL_KEY"):
         print "\nERROR: Required environment variable 'MANDRILL_KEY' not set!\n"
         sys.exit()
+    else:
+        mandrill_client = mandrill.Mandrill(os.environ.get('MANDRILL_KEY'))
 
     print 'Emailing user information and credentials ...'
 
