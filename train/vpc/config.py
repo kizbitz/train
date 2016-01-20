@@ -17,17 +17,20 @@ def check_env(env, default=None):
     return os.environ.get(env, default)
 
 
+
 def check_user_file(VPC, user_file):
     """Check/create USER_FILE"""
 
     if user_file:
         return user_file
-    elif os.path.exists('/host/vpcs/{0}/users.cfg'.format(VPC)):
-        return '/host/vpcs/{0}/users.cfg'.format(VPC)
+    elif os.path.exists('/host/{0}/users.cfg'.format(VPC)):
+        return '/host/{0}/users.cfg'.format(VPC)
     else:
-        with open('/host/vpcs/{0}/users.cfg'.format(VPC), 'w') as f:
+        if not os.path.exists('/host/{0}'.format(VPC)):
+            os.makedirs('/host/{0}'.format(VPC))
+        with open('/host/{0}/users.cfg'.format(VPC), 'w') as f:
             f.write(TRAINER + '\n')
-        return '/host/vpcs/{0}/users.cfg'.format(VPC)
+        return '/host/{0}/users.cfg'.format(VPC)
 
 
 def check_email_template(VPC, template):
@@ -35,8 +38,8 @@ def check_email_template(VPC, template):
 
     if template:
         return template
-    elif os.path.exists('/host/vpcs/{0}/email.py'.format(VPC)):
-        return '/host/vpcs/{0}/email.py'
+    elif os.path.exists('/host/{0}/email.py'.format(VPC)):
+        return '/host/{0}/email.py'
     else:
         return '/home/train/train/templates/email.py'
 

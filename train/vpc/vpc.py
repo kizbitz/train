@@ -20,6 +20,7 @@ def _connect():
     return boto.vpc.connect_to_region(AWS_REGION)
 
 
+
 def _create_vpc(conn):
     """Create VPC in AWS"""
 
@@ -257,8 +258,8 @@ def create_key_pairs():
             user = user.split(',')[0].strip()
 
             # directory to store keys on host
-            if not os.path.exists('/host/vpcs/{0}/users/{1}'.format(VPC, user)):
-                os.makedirs('/host/vpcs/{0}/users/{1}'.format(VPC, user))
+            if not os.path.exists('/host/{0}/users/{1}'.format(VPC, user)):
+                os.makedirs('/host/{0}/users/{1}'.format(VPC, user))
 
             if check_key_pair(user):
                 if util.yn_prompt('Key pair exists. Delete and create a new one?'):
@@ -268,12 +269,12 @@ def create_key_pairs():
 
             print "Creating key pair: {0} ...".format(user + '-{0}'.format(VPC))
             key = conn.create_key_pair(user + '-{0}'.format(VPC))
-            key.save('/host/vpcs/{0}/users/{1}'.format(VPC, user))
+            key.save('/host/{0}/users/{1}'.format(VPC, user))
 
             # Generate ppk for Windows/PuTTY users
-            os.system("puttygen /host/vpcs/{1}/users/{0}/{0}-{1}.pem -o /host/vpcs/{1}/users/{0}/{0}-{1}.ppk -O private".format(user, VPC))
+            os.system("puttygen /host/{1}/users/{0}/{0}-{1}.pem -o /host/{1}/users/{0}/{0}-{1}.ppk -O private".format(user, VPC))
 
-            with open('/host/vpcs/{0}/key-pairs.txt'.format(VPC), 'a') as f:
+            with open('/host/{0}/key-pairs.txt'.format(VPC), 'a') as f:
                 f.write(user + '-' + VPC + '\n')
 
             print "Key '{0}' created and saved ...".format(user + '-{0}'.format(VPC))
@@ -298,10 +299,10 @@ def delete_key_pair(user):
     print "Deleting key pair for user: {0} ...".format(user.strip())
     conn = _connect()
     conn.delete_key_pair(user + '-{0}'.format(VPC))
-    if os.path.exists('/host/vpcs/{0}/users/{1}/{2}'.format(VPC, user, user + '-{0}.pem'.format(VPC))):
-        os.remove('/host/vpcs/{0}/users/{1}/{2}'.format(VPC, user, user + '-{0}.pem'.format(VPC)))
-    if os.path.exists('/host/vpcs/{0}/users/{1}/{2}'.format(VPC, user, user + '-{0}.ppk'.format(VPC))):
-        os.remove('/host/vpcs/{0}/users/{1}/{2}'.format(VPC, user, user + '-{0}.ppk'.format(VPC)))
+    if os.path.exists('/host/{0}/users/{1}/{2}'.format(VPC, user, user + '-{0}.pem'.format(VPC))):
+        os.remove('/host/{0}/users/{1}/{2}'.format(VPC, user, user + '-{0}.pem'.format(VPC)))
+    if os.path.exists('/host/{0}/users/{1}/{2}'.format(VPC, user, user + '-{0}.ppk'.format(VPC))):
+        os.remove('/host/{0}/users/{1}/{2}'.format(VPC, user, user + '-{0}.ppk'.format(VPC)))
 
 
 def delete_key_pairs():
@@ -309,13 +310,13 @@ def delete_key_pairs():
 
     conn = _connect()
 
-    with open('/host/vpcs/{0}/key-pairs.txt'.format(VPC)) as users:
+    with open('/host/{0}/key-pairs.txt'.format(VPC)) as users:
         for user in users:
             user = user.split(',')[0].strip()
             print "Deleting key pair for user: {0} ...".format(user.strip())
             conn.delete_key_pair(user + '-{0}'.format(VPC))
-            if os.path.exists('/host/vpcs/{0}/{1}/{2}'.format(VPC, user, user + '-{0}.pem'.format(VPC))):
-                os.remove('/host/vpcs/{0}/{1}/{2}'.format(VPC, user, user + '-{0}.pem'.format(VPC)))
+            if os.path.exists('/host/{0}/{1}/{2}'.format(VPC, user, user + '-{0}.pem'.format(VPC))):
+                os.remove('/host/{0}/{1}/{2}'.format(VPC, user, user + '-{0}.pem'.format(VPC)))
 
 
 def get_vpc_id(conn, vpc_tag):
@@ -390,12 +391,32 @@ def terminate_environment(conn, user_vpc):
     instances = inst.terminate_all_instances(conn, user_vpc)
     if instances:
         inst.confirm_terminated(instances)
-    delete_iam_profile()
-    delete_key_pairs()
-    delete_amis()
-    delete_vpc(user_vpc)
-    if os.path.exists('/host/vpcs/{0}'.format(VPC)):
-        shutil.rmtree('/host/vpcs/{0}'.format(VPC))
+    try:
+        delete_iam_profile()
+    except:
+        print "WARNING: delete_iam_profile() failed"
+        pass
+    try:
+        delete_key_pairs()
+    except:
+        print "WARNING: delete_key_pairs() failed"
+        pass
+    try:
+        delete_amis()
+    except:
+        print "WARNING: delete_amis() failed"
+        pass
+    try:
+        delete_vpc(user_vpc)
+    except:
+        print "WARNING: delete_vpcs() failed"
+        pass
+    try:
+        if os.path.exists('/host/{0}'.format(VPC)):
+            shutil.rmtree('/host/{0}'.format(VPC))
+    except:
+        print "WARNING: Removing directory '/host/{0}' failed".format(VPC)
+        pass
 
     print "Environment deleted ..."
     print 'Finished ...'

@@ -31,16 +31,16 @@ def email_credentials(conn):
             email = line.split(',')[1].strip()
 
             # keyfile
-            with open ('/host/vpcs/{0}/users/{1}/{1}-{0}.pem'.format(VPC, username), "r") as f:
+            with open ('/host/{0}/users/{1}/{1}-{0}.pem'.format(VPC, username), "r") as f:
                 keyfile = base64.b64encode(f.read())
             # ppkfile
-            with open ('/host/vpcs/{0}/users/{1}/{1}-{0}.ppk'.format(VPC, username), "r") as f:
+            with open ('/host/{0}/users/{1}/{1}-{0}.ppk'.format(VPC, username), "r") as f:
                 ppkfile = base64.b64encode(f.read())
 
             # instances
-            files = [f for f in os.listdir('/host/vpcs/{0}/users/{1}/'.format(VPC, username)) if f.endswith('.txt')]
+            files = [f for f in os.listdir('/host/{0}/users/{1}/'.format(VPC, username)) if f.endswith('.txt')]
             for textfile in files:
-                with open('/host/vpcs/{0}/users/{1}/{2}'.format(VPC, username, textfile)) as f:
+                with open('/host/{0}/users/{1}/{2}'.format(VPC, username, textfile)) as f:
                     instances += f.read()
                     instances += '\n'
 

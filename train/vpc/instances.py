@@ -110,12 +110,12 @@ def output_user_files(conn, user_vpc, lab_tag):
             user = user.split(',')[0].strip()
 
             # directory to store instance info on host
-            if not os.path.exists('/host/vpcs/{0}/users/{1}'.format(VPC, user)):
-                os.makedirs('/host/vpcs/{0}/users/{1}'.format(VPC, user))
+            if not os.path.exists('/host/{0}/users/{1}'.format(VPC, user)):
+                os.makedirs('/host/{0}/users/{1}'.format(VPC, user))
 
             info = labs.get_user_instance_info(conn, user_vpc, lab_tag, user)
 
-            with open('/host/vpcs/{0}/users/{1}/{2}.txt'.format(VPC, user, lab_tag), 'w') as f:
+            with open('/host/{0}/users/{1}/{2}.txt'.format(VPC, user, lab_tag), 'w') as f:
                 f.write('AWS Instances:\n')
                 for i in info:
                     f.write(i)
@@ -148,7 +148,7 @@ def terminate_all_instances(conn, user_vpc):
         # remove all local user lab/instance details text files
         with open(USER_FILE) as users:
             for user in users:
-                for f in glob.glob('/host/vpcs/{0}/users/{1}/*.txt'.format(VPC, user.strip())):
+                for f in glob.glob('/host/{0}/users/{1}/*.txt'.format(VPC, user.strip())):
                     os.remove(f)
 
         return instances
