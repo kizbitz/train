@@ -14,11 +14,14 @@ import vpc
 def _checks():
     """Requirements"""
 
+    if not os.environ.get("MANDRILL_KEY"):
+        print "\nERROR: Required environment variable 'MANDRILL_KEY' not set!\n"
+        sys.exit()
     if os.environ.get('USER_FILE'):
         print 'ERROR: USER_FILE environment variable must not be set.'
         sys.exit()
-    if os.path.exists('/host/users.cfg'):
-        os.rename('/host/users.cfg', '/host/users.cfg.register.bak')
+    if os.path.exists('/host/{0}/users.cfg'.format(VPC)):
+        os.rename('/host/{0}/users.cfg'.format(VPC), '/host/{0}/users.cfg.register.bak'.format(VPC))
 
 
 def set_username(user):
@@ -29,10 +32,10 @@ def set_username(user):
     for c in string.punctuation:
         username = username.replace(c, '')
 
-    if os.path.exists('/host/share/{0}'.format(username)):
+    if os.path.exists('/host/{0}/users/{1}'.format(VPC, username)):
         count = 1
         username = username + str(count)
-        while os.path.exists('/host/share/{0}'.format(username)):
+        while os.path.exists('/host/{0}/users/{1}'.format(VPC, username)):
             count += 1
             username = username + str(count)
 
@@ -64,7 +67,7 @@ def registration(conn, user_vpc, lab):
     while True:
         os.system('clear')
         print '\n' + welcome
-        current_email = raw_input("\nPlease enter a valid email address: ")
+        current_email = raw_input("\nPlease enter a valid email address (or 'exit' to quit): ")
 
         if current_email.lower() == 'exit':
             break
@@ -73,9 +76,9 @@ def registration(conn, user_vpc, lab):
             # don't allow duplicate usernames
             username = set_username(current_email.strip())
 
-            with open('/tmp/user.txt', 'w') as f:
+            with open('/host/{0}/users.cfg'.format(VPC), 'w') as f:
                 f.write(username + ',' + current_email + '\n')
-            with open('/host/registered-users.txt', 'a') as f:
+            with open('/host/{0}/registered-users.txt'.format(VPC), 'a') as f:
                 f.write(username + ',' + current_email + '\n')
 
         vpc.create_key_pairs()
@@ -88,8 +91,5 @@ def registration(conn, user_vpc, lab):
         raw_input("\nPress 'Enter' to continue ")
 
     # clean up
-    if os.path.exists('/host/users.cfg.register.bak'):
-        os.rename('/host/users.cfg.register.bak', '/host/users.cfg')
-    with open('/tmp/user.txt', 'w') as f:
-        f.write(os.environ['TRAINER'] + '\n')
-
+    if os.path.exists('/host/{0}/users.cfg.register.bak'.format(VPC)):
+        os.rename('/host/{0}/users.cfg.register.bak'.format(VPC), '/host/{0}/users.cfg'.format(VPC))

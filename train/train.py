@@ -19,12 +19,12 @@ import vpc.vpc as vpc
 
 # configure parser
 parser = argparse.ArgumentParser(description='Train: AWS CLI Tool')
-parser.add_argument('-k',
-                    help='Create AWS key pairs',
-                    action='store_true', required=False)
-
 parser.add_argument('-v',
                     help='Create AWS VPC',
+                    action='store_true', required=False)
+
+parser.add_argument('-k',
+                    help='Create AWS key pairs',
                     action='store_true', required=False)
 
 parser.add_argument('-a',
@@ -69,11 +69,11 @@ args = parser.parse_args()
 def process():
     """Execute command/flags"""
 
-    if args.k:
-        vpc.create_key_pairs()
     if args.v:
         print "Creating AWS VPC ..."
         vpc.create_vpc()
+    if args.k:
+        vpc.create_key_pairs()
     if args.a:
         labs.list_available_labs()
     if args.i:

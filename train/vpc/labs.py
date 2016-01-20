@@ -212,9 +212,9 @@ def terminate_lab(conn, user_vpc, lab_tag):
     conn.terminate_instances(instance_ids=instance_ids)
 
     try:
-        with open(USER_FILE) as users:
+        with open('/host/{0}/key-pairs.txt'.format(VPC)) as users:
             for user in users:
-                os.remove('/host/share/{0}/{1}.txt'.format(user.strip(), lab_tag))
+                os.remove('/host/{0}/users/{1}/{2}.txt'.format(VPC, user.split('-')[0], lab_tag))
     except:
         print "No user files removed..."
 
