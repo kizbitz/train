@@ -257,8 +257,8 @@ def create_key_pairs():
             user = user.split(',')[0].strip()
 
             # directory to store keys on host
-            if not os.path.exists('/host/share/{0}'.format(user)):
-                os.makedirs('/host/share/{0}'.format(user))
+            if not os.path.exists('/host/vpcs/{0}/users/{1}'.format(VPC, user)):
+                os.makedirs('/host/vpcs/{0}/users/{1}'.format(VPC, user))
 
             if check_key_pair(user):
                 if util.yn_prompt('Key pair exists. Delete and create a new one?'):
@@ -268,10 +268,13 @@ def create_key_pairs():
 
             print "Creating key pair: {0} ...".format(user + '-{0}'.format(VPC))
             key = conn.create_key_pair(user + '-{0}'.format(VPC))
-            key.save('/host/share/{0}'.format(user))
+            key.save('/host/vpcs/{0}/users/{1}'.format(VPC, user))
 
             # Generate ppk for Windows/PuTTY users
-            os.system("puttygen /host/share/{0}/{0}-{1}.pem -o /host/share/{0}/{0}-{1}.ppk -O private".format(user, VPC))
+            os.system("puttygen /host/vpcs/{1}/users/{0}/{0}-{1}.pem -o /host/vpcs/{1}/users/{0}/{0}-{1}.ppk -O private".format(user, VPC))
+
+            with open('/host/vpcs/{0}/key-pairs.txt'.format(VPC), 'a') as f:
+                f.write(user + '-' + VPC + '\n')
 
             print "Key '{0}' created and saved ...".format(user + '-{0}'.format(VPC))
 
@@ -295,8 +298,10 @@ def delete_key_pair(user):
     print "Deleting key pair for user: {0} ...".format(user.strip())
     conn = _connect()
     conn.delete_key_pair(user + '-{0}'.format(VPC))
-    if os.path.exists('/host/share/{0}/{1}'.format(user, user + '-{0}.pem'.format(VPC))):
-        os.remove('/host/share/{0}/{1}'.format(user, user + '-{0}.pem'.format(VPC)))
+    if os.path.exists('/host/vpcs/{0}/users/{1}/{2}'.format(VPC, user, user + '-{0}.pem'.format(VPC))):
+        os.remove('/host/vpcs/{0}/users/{1}/{2}'.format(VPC, user, user + '-{0}.pem'.format(VPC)))
+    if os.path.exists('/host/vpcs/{0}/users/{1}/{2}'.format(VPC, user, user + '-{0}.ppk'.format(VPC))):
+        os.remove('/host/vpcs/{0}/users/{1}/{2}'.format(VPC, user, user + '-{0}.ppk'.format(VPC)))
 
 
 def delete_key_pairs():
@@ -304,13 +309,13 @@ def delete_key_pairs():
 
     conn = _connect()
 
-    with open(USER_FILE) as users:
+    with open('/host/vpcs/{0}/key-pairs.txt'.format(VPC)) as users:
         for user in users:
             user = user.split(',')[0].strip()
             print "Deleting key pair for user: {0} ...".format(user.strip())
             conn.delete_key_pair(user + '-{0}'.format(VPC))
-            if os.path.exists('/host/share/{0}/{1}'.format(user, user + '-{0}.pem'.format(VPC))):
-                os.remove('/host/share/{0}/{1}'.format(user, user + '-{0}.pem'.format(VPC)))
+            if os.path.exists('/host/vpcs/{0}/{1}/{2}'.format(VPC, user, user + '-{0}.pem'.format(VPC))):
+                os.remove('/host/vpcs/{0}/{1}/{2}'.format(VPC, user, user + '-{0}.pem'.format(VPC)))
 
 
 def get_vpc_id(conn, vpc_tag):
@@ -389,8 +394,8 @@ def terminate_environment(conn, user_vpc):
     delete_key_pairs()
     delete_amis()
     delete_vpc(user_vpc)
-    if os.path.exists('/host/share'):
-        shutil.rmtree('/host/share')
+    if os.path.exists('/host/vpcs/{0}'.format(VPC)):
+        shutil.rmtree('/host/vpcs/{0}'.format(VPC))
 
     print "Environment deleted ..."
     print 'Finished ...'

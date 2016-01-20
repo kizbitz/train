@@ -17,17 +17,28 @@ def check_env(env, default=None):
     return os.environ.get(env, default)
 
 
-def check_user_file(user_file):
+def check_user_file(VPC, user_file):
     """Check/create USER_FILE"""
 
     if user_file:
         return user_file
-    elif os.path.exists('/host/users.cfg'):
-        return '/host/users.cfg'
+    elif os.path.exists('/host/vpcs/{0}/users.cfg'.format(VPC)):
+        return '/host/vpcs/{0}/users.cfg'.format(VPC)
     else:
-        with open('/tmp/user.txt', 'w') as f:
+        with open('/host/vpcs/{0}/users.cfg'.format(VPC), 'w') as f:
             f.write(TRAINER + '\n')
-        return '/tmp/user.txt'
+        return '/host/vpcs/{0}/users.cfg'.format(VPC)
+
+
+def check_email_template(VPC, template):
+    """Check EMAIL_TEMPLATE"""
+
+    if template:
+        return template
+    elif os.path.exists('/host/vpcs/{0}/email.py'.format(VPC)):
+        return '/host/vpcs/{0}/email.py'
+    else:
+        return '/home/train/train/templates/email.py'
 
 
 # Required environment variables
@@ -45,17 +56,17 @@ AWS_SECRET_ACCESS_KEY = check_env('AWS_SECRET_ACCESS_KEY')
 # Optional environment variables
 # ==============================
 
+# Tag for VPC, labs, instances, etc...
+VPC = check_env('VPC', 'train')
+
 # Root lab directory
 LAB_DIR = check_env('LAB_DIR', '/home/train/train/labs/')
 
 # Full path to user configuration file
-USER_FILE = check_user_file(os.environ.get('USER_FILE'))
-
-# Tag for VPC, labs, instances, etc...
-VPC = check_env('VPC', 'train')
+USER_FILE = check_user_file(VPC, os.environ.get('USER_FILE'))
 
 # Template file for emails
-EMAIL_TEMPLATE = check_env('EMAIL_TEMPLATE', '/home/train/train/templates/email.py')
+EMAIL_TEMPLATE = check_email_template(VPC, os.environ.get('EMAIL_TEMPLATE'))
 
 
 # Other

@@ -214,7 +214,7 @@ def terminate_lab(conn, user_vpc, lab_tag):
     try:
         with open(USER_FILE) as users:
             for user in users:
-                os.remove('/host/share/{0}/{1}.txt'.format(user.strip(), lab_tag))
+                os.remove('/host/vpcs/{0}/users/{1}/{2}.txt'.format(VPC, user.strip(), lab_tag))
     except:
         print "No user files removed..."
 

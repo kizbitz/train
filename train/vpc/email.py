@@ -11,10 +11,15 @@ import mandrill
 
 from config import *
 
-mandrill_client = mandrill.Mandrill(os.environ.get('MANDRILL_KEY'))
+if os.environ.get("MANDRILL_KEY"):
+    mandrill_client = mandrill.Mandrill(os.environ.get('MANDRILL_KEY'))
 
 def email_credentials(conn):
     """Email all user information and credentials listed in USER_FILE"""
+
+    if not os.environ.get("MANDRILL_KEY"):
+        print "\nERROR: Required environment variable 'MANDRILL_KEY' not set!\n"
+        sys.exit()
 
     print 'Emailing user information and credentials ...'
 
@@ -26,16 +31,16 @@ def email_credentials(conn):
             email = line.split(',')[1].strip()
 
             # keyfile
-            with open ('/host/share/{0}/{0}-{1}.pem'.format(username, VPC), "r") as f:
+            with open ('/host/vpcs/{0}/users/{1}/{1}-{0}.pem'.format(VPC, username), "r") as f:
                 keyfile = base64.b64encode(f.read())
             # ppkfile
-            with open ('/host/share/{0}/{0}-{1}.ppk'.format(username, VPC), "r") as f:
+            with open ('/host/vpcs/{0}/users/{1}/{1}-{0}.ppk'.format(VPC, username), "r") as f:
                 ppkfile = base64.b64encode(f.read())
 
             # instances
-            files = [f for f in os.listdir('/host/share/{0}/'.format(username)) if f.endswith('.txt')]
+            files = [f for f in os.listdir('/host/vpcs/{0}/users/{1}/'.format(VPC, username)) if f.endswith('.txt')]
             for textfile in files:
-                with open('/host/share/{0}/{1}'.format(username, textfile)) as f:
+                with open('/host/vpcs/{0}/users/{1}/{2}'.format(VPC, username, textfile)) as f:
                     instances += f.read()
                     instances += '\n'
 
