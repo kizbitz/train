@@ -16,6 +16,7 @@ RUN pip install --upgrade \
     boto \
     mandrill \
     pip \
+    requests \
     toml
 
 RUN useradd train && \
