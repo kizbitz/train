@@ -24,7 +24,7 @@ def _prompt_config(lab, path):
             if f.endswith('.py'):
                 options.append(f.strip('.py'))
 
-        return util.list_prompt('\nWhich configuration would you like to execute?: ', options)
+        return util.list_prompt('Which configuration would you like to execute?: ', options)
 
 
 def list_available_labs():
