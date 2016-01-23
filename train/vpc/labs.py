@@ -22,7 +22,7 @@ def _prompt_config(lab, path):
         options = []
         for f in files:
             if f.endswith('.py'):
-                options.append(f.strip('.py'))
+                options.append(f.replace('.py',''))
 
         return util.list_prompt('Which configuration would you like to execute?: ', options)
 
