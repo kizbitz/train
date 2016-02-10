@@ -263,7 +263,7 @@ def create_key_pairs():
 
             if check_key_pair(user + '-{0}'.format(VPC)):
                 if util.yn_prompt('Key pair exists. Delete and create a new one?'):
-                    delete_key_pair(user + '-{0}'.format(VPC))
+                    delete_key_pair(user)
                 else:
                     continue
 
@@ -298,7 +298,7 @@ def delete_key_pair(user):
 
     print "Deleting key pair for user: {0} ...".format(user.strip())
     conn = _connect()
-    conn.delete_key_pair(user)
+    conn.delete_key_pair(user + '-{0}'.format(VPC))
     if os.path.exists('/host/{0}/users/{1}/{2}'.format(VPC, user, user + '-{0}.pem'.format(VPC))):
         os.remove('/host/{0}/users/{1}/{2}'.format(VPC, user, user + '-{0}.pem'.format(VPC)))
     if os.path.exists('/host/{0}/users/{1}/{2}'.format(VPC, user, user + '-{0}.ppk'.format(VPC))):
