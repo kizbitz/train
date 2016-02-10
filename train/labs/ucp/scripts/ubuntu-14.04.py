@@ -117,4 +117,4 @@ def pre_process():
 
 def post_process():
     """Executed after launching instances in AWS"""
-    pass
+    print "Instances Launched ...\n\nNOTE: If you selected the non-interactive install during launch the default user/pass is: admin/orca\n"
