@@ -56,10 +56,27 @@ Environment variables can be set in the container by:
 
 ```
 TRAINER=jbaker
-AWS_REGION=us-east-1
+AWS_REGION=<region>
 AWS_ACCESS_KEY_ID=<id>
 AWS_SECRET_ACCESS_KEY=<key>
 ```
+
+Available AWS Regions
+
+| Region Name | Region |
+| --- | --- |
+| US East (N. Virginia)	| us-east-1 |
+| US West (Oregon)	| us-west-2 |
+| US West (N. California)	| us-west-1 |
+| EU (Ireland)	| eu-west-1 |
+| EU (Frankfurt)	| eu-central-1 |
+| Asia Pacific (Singapore)	| ap-southeast-1 |
+| Asia Pacific (Tokyo)	| ap-northeast-1 |
+| Asia Pacific (Sydney)	| ap-southeast-2 |
+| Asia Pacific (Seoul)	| ap-northeast-2 |
+| South America (Sao Paulo)	| sa-east-1 |
+
+---
 
 When using the bulk registration feature or registration mode a [Mandrill API Key](https://www.mandrill.com/) is also required
 
