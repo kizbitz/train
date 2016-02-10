@@ -5,11 +5,8 @@ PRIMARY = '''#!/bin/sh
 #
 FQDN="{fqdn}"
 
-# /etc/hostname - /etc/hosts
-sed -i "1 c\\127.0.0.1 $FQDN localhost" /etc/hosts
-echo $FQDN > /etc/hostname
-service hostname restart
-sleep 5
+# hostname
+hostnamectl set-hostname $FQDN
 
 {dinfo}
 '''
