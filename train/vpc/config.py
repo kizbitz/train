@@ -33,7 +33,7 @@ def check_user_file(VPC, user_file):
         return '/host/{0}/users.cfg'.format(VPC)
 
 
-def check_email_template(VPC, template):
+def get_email_template(VPC, template):
     """Check EMAIL_TEMPLATE"""
 
     if template:
@@ -69,7 +69,7 @@ LAB_DIR = check_env('LAB_DIR', '/home/train/train/labs/')
 USER_FILE = check_user_file(VPC, os.environ.get('USER_FILE'))
 
 # Template file for emails
-EMAIL_TEMPLATE = check_email_template(VPC, os.environ.get('EMAIL_TEMPLATE'))
+EMAIL_TEMPLATE = get_email_template(VPC, os.environ.get('EMAIL_TEMPLATE'))
 
 
 # Other

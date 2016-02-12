@@ -5,6 +5,7 @@ from distutils.util import strtobool
 import os
 import sys
 import toml
+from shutil import copyfile
 
 import boto.ec2
 from boto.ec2.connection import EC2Connection
@@ -57,3 +58,15 @@ def read_config(config):
     except IOError, e:
         print "Error reading config file: {0}".format(os.strerror(e.errno))
         sys.exit(e.errno)
+
+def check_email_template():
+    """Check for custom email template"""
+
+    if not os.environ.get('EMAIL_TEMPLATE') and not os.path.exists('/host/{0}/email.py'.format(VPC)):
+        print "\nWARNING: Custom email template for this VPC is not configured!"
+        if not yn_prompt("\nContinue with the default email template?"):
+            copyfile('/home/train/train/templates/email.py', '/host/{0}/email.py'.format(VPC))
+            print "\nThe current process has been cancelled and a new template file has been created at '/host/{0}/email.py'".format(VPC)
+            print "Edit this template before continuing ...\n".format(VPC)
+            sys.exit(1)
+
