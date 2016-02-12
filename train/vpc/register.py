@@ -8,6 +8,7 @@ import sys
 from config import *
 import email
 import labs
+from util import check_email_template
 import vpc
 
 
@@ -22,6 +23,7 @@ def _checks():
         sys.exit()
     if os.path.exists('/host/{0}/users.cfg'.format(VPC)):
         os.rename('/host/{0}/users.cfg'.format(VPC), '/host/{0}/users.cfg.register.bak'.format(VPC))
+    check_email_template()
 
 
 def set_username(user):

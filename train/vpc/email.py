@@ -5,6 +5,7 @@ import imp
 import os
 import base64
 import sys
+from util import check_email_template
 
 import mandrill
 
@@ -19,6 +20,8 @@ def email_credentials(conn):
         sys.exit()
     else:
         mandrill_client = mandrill.Mandrill(os.environ.get('MANDRILL_KEY'))
+
+    check_email_template()
 
     print 'Emailing user information and credentials ...'
 
