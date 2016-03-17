@@ -43,6 +43,11 @@ echo $FQDN > /etc/hostname
 service hostname restart
 sleep 5
 
+# updates
+apt-get update
+apt-get -y upgrade
+apt-get install -y git tree jq linux-image-extra-4.2.0-23-generic linux-image-4.2.0.23-generic
+
 # docker
 curl -sSL https://get.docker.com/ | sh
 

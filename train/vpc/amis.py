@@ -83,6 +83,7 @@ US_EAST_1 = {
     'RHEL-7.0': 'ami-a8d369c0',
     'RHEL-7.1': 'ami-12663b7a',
     'SUSE-SLES-12': 'ami-aeb532c6',
+    'Ubuntu-12.04': 'ami-427a392a',
     'Ubuntu-14.04': 'ami-767a391e',
     'Ubuntu-15.04': 'ami-f50e209f',
 }
