@@ -112,4 +112,5 @@ US_WEST_2 = {
     'SUSE-SLES-12': 'ami-d7450be7',
     'Ubuntu-14.04': 'ami-1b471c2b',
     'Ubuntu-15.04': 'ami-6206e002',
+    'JTU-LDAP': 'ami-be39d1de',
 }
