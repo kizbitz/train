@@ -4,6 +4,7 @@
 import sys
 from distutils.util import strtobool
 
+# prompts
 def yn_prompt(query):
     """Generic Y/N Prompt"""
 
@@ -18,17 +19,18 @@ def yn_prompt(query):
 
 
 # prompts
-install = yn_prompt("\nInstall UCP using 'non-interactive' mode on the controller instance?")
+install = yn_prompt("\nInstall UCP using 'non-interactive' mode on the master instance?")
 
 if install:
-    txt = 'docker run --rm --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp install --host-address $(curl http://169.254.169.254/latest/meta-data/public-hostname)'
+    ucp = 'docker run --rm --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp install --host-address $(curl http://169.254.169.254/latest/meta-data/public-hostname)'
 else:
-    txt = 'docker run --name ucp --rm -v /var/run/docker.sock:/var/run/docker.sock docker/ucp images'
+    ucp = 'docker run --name ucp --rm -v /var/run/docker.sock:/var/run/docker.sock docker/ucp images'
 
 
-# scripts
 PRIMARY_OS = 'Ubuntu-14.04'
-CONTROLLER = '''#!/bin/sh
+
+# ucp
+UCP = '''#!/bin/sh
 
 FQDN="{{fqdn}}"
 
@@ -66,9 +68,55 @@ apt-get install -y git tree jq
 {{dinfo}}
 
 reboot
-'''.format(txt)
+'''.format(ucp)
 
 
+# dtr
+DTR = '''#!/bin/sh
+#
+FQDN="{fqdn}"
+
+export DEBIAN_FRONTEND=noninteractive
+
+# locale
+sudo locale-gen en_US.UTF-8
+
+# /etc/hostname - /etc/hosts
+sed -i "1 c\\127.0.0.1 $FQDN localhost" /etc/hosts
+echo $FQDN > /etc/hostname
+service hostname restart
+sleep 5
+
+# packages
+apt-get update
+apt-get -y upgrade
+apt-get install -y git tree jq xfsprogs linux-image-extra-4.2.0-23-generic linux-image-4.2.0.23-generic
+
+# docker
+curl -sSL https://get.docker.com/ | sh
+
+# docker compose
+curl -L https://github.com/docker/compose/releases/download/1.6.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+
+usermod -aG docker ubuntu
+
+# block device info
+{dinfo}
+
+# dtr
+sudo bash -c "$(sudo docker run docker/trusted-registry install)"
+
+# change storage location
+service docker stop
+rm -r /var/local/dtr/image-storage/local
+ln -s /var/storage /var/local/dtr/image-storage/local
+service docker start
+
+reboot
+'''
+
+# nodes
 NODE = '''#!/bin/sh
 
 FQDN="{fqdn}"
@@ -95,7 +143,7 @@ curl -sSL https://get.docker.com/ | sh
 usermod -aG docker ubuntu
 
 # docker compose
-curl -L https://github.com/docker/compose/releases/download/1.6.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+curl -L https://github.com/docker/compose/releases/download/1.6.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 
 # packages
@@ -108,11 +156,10 @@ docker run --name ucp --rm -v /var/run/docker.sock:/var/run/docker.sock docker/u
 
 reboot
 '''
-
-
+# Script to use if launching from a custom lab AMI image
 AMIBUILD = '''#!/bin/sh
-#
-FQDN="{{fqdn}}"
+
+FQDN="{fqdn}"
 
 # /etc/hostname - /etc/hosts
 sed -i "1 c\\127.0.0.1 $FQDN localhost" /etc/hosts
@@ -120,7 +167,7 @@ echo $FQDN > /etc/hostname
 service hostname restart
 sleep 5
 
-{{dinfo}}
+{dinfo}
 reboot
 '''
 
@@ -131,4 +178,12 @@ def pre_process():
 
 def post_process():
     """Executed after launching instances in AWS"""
-    print "Instances Launched ...\n\nNOTE: If you selected the non-interactive install during launch the default user/pass is: admin/orca\n"
+    pass
+
+
+# Notes
+'''
+Script requires:
+    {fqdn}
+    {dinfo}
+'''
