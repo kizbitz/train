@@ -60,6 +60,17 @@ def _create_gateway(conn, vpc):
     print 'Creating gateway: {0} ...'.format(IGW)
 
     gateway = conn.create_internet_gateway()
+    # state polling copied from the following
+    # http://stackoverflow.com/questions/22263300/aws-boto-how-to-refresh-subnet-state-after-creating-it-its-stuck-in-pending
+    while gateway.state == 'pending':
+        """Waiting for AWS gateway creation to complete"""
+        gateways = conn.get_all_internet_gateways()
+        for item in gateways
+            """Getting AWS gateway status"""
+            if item.id == gateway.id
+                gateway.state = item.state
+                time.sleep(5)
+
     gateway.add_tag('Name', IGW)
     conn.attach_internet_gateway(gateway.id, vpc.id)
 
@@ -93,6 +104,18 @@ def _create_subnets(conn, vpc, route_table):
         subnet = conn.create_subnet(vpc.id,
                                     "10.0.{0}.0/20".format(current_ip),
                                     availability_zone=zone)
+
+        # state polling copied from the following
+        # http://stackoverflow.com/questions/22263300/aws-boto-how-to-refresh-subnet-state-after-creating-it-its-stuck-in-pending
+        while subnet.state == 'pending':
+            """Waiting for AWS subnet creation to complete"""
+            subnets = conn.get_all_subnets()
+            for item in subnets:
+                """Getting AWS subnet status"""
+                if item.id == subnet.id:
+                    subnet.state = item.state
+                    time.sleep(5)
+
         subnet.add_tag('Name', tag)
 
         # associate route table
