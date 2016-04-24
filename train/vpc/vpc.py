@@ -12,6 +12,7 @@ from boto.ec2.connection import EC2Connection
 from config import *
 import instances as inst
 import util
+import time
 
 
 def _connect():
@@ -62,14 +63,17 @@ def _create_gateway(conn, vpc):
     gateway = conn.create_internet_gateway()
     # state polling copied from the following
     # http://stackoverflow.com/questions/22263300/aws-boto-how-to-refresh-subnet-state-after-creating-it-its-stuck-in-pending
-    while gateway.state == 'pending':
-        """Waiting for AWS gateway creation to complete"""
-        gateways = conn.get_all_internet_gateways()
-        for item in gateways
-            """Getting AWS gateway status"""
-            if item.id == gateway.id
-                gateway.state = item.state
-                time.sleep(5)
+    # while gateway.state == 'pending':
+    #     """Waiting for AWS gateway creation to complete"""
+    #     gateways = conn.get_all_internet_gateways()
+    #     for item in gateways:
+    #         """Getting AWS gateway status"""
+    #         if item.id == gateway.id:
+    #             gateway.state = item.state
+    #             time.sleep(5)
+
+    # add an artificial delay until we can poll an available state
+    time.sleep(5)
 
     gateway.add_tag('Name', IGW)
     conn.attach_internet_gateway(gateway.id, vpc.id)
