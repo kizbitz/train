@@ -78,6 +78,8 @@ Available AWS Regions
 
 ---
 
+TODO: http://docs.aws.amazon.com/general/latest/gr/rande.html#ses_region
+
 When using the bulk registration feature or registration mode a [Mandrill API Key](https://www.mandrill.com/) is also required
 
 ```
