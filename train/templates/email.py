@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # prompts
-subject =  raw_input("Enter the 'Subject' for the outgoing message: ")
+subject = raw_input("Enter the 'Subject' for the outgoing message: ")
 
 # static
 body = """Welcome to Docker training!
