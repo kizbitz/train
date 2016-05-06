@@ -61,22 +61,19 @@ def _create_gateway(conn, vpc):
     print 'Creating gateway: {0} ...'.format(IGW)
 
     gateway = conn.create_internet_gateway()
-    # state polling copied from the following
-    # http://stackoverflow.com/questions/22263300/aws-boto-how-to-refresh-subnet-state-after-creating-it-its-stuck-in-pending
-    # while gateway.state == 'pending':
-    #     """Waiting for AWS gateway creation to complete"""
-    #     gateways = conn.get_all_internet_gateways()
-    #     for item in gateways:
-    #         """Getting AWS gateway status"""
-    #         if item.id == gateway.id:
-    #             gateway.state = item.state
-    #             time.sleep(5)
-
-    # add an artificial delay until we can poll an available state
-    time.sleep(5)
-
     gateway.add_tag('Name', IGW)
-    conn.attach_internet_gateway(gateway.id, vpc.id)
+
+    attempts=0
+    while True:
+        try:
+            # workaround for race where the gateway may not be ready yet
+            attempts += 1
+            conn.attach_internet_gateway(gateway.id, vpc.id)
+            break
+        except boto.exception.EC2ResponseError:
+            time.sleep(1)
+            if attempts > 5:
+                raise
 
     return gateway
 
