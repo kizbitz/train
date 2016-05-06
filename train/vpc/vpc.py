@@ -12,6 +12,7 @@ from boto.ec2.connection import EC2Connection
 from config import *
 import instances as inst
 import util
+import time
 
 
 def _connect():
@@ -61,7 +62,18 @@ def _create_gateway(conn, vpc):
 
     gateway = conn.create_internet_gateway()
     gateway.add_tag('Name', IGW)
-    conn.attach_internet_gateway(gateway.id, vpc.id)
+
+    attempts=0
+    while True:
+        try:
+            # workaround for race where the gateway may not be ready yet
+            attempts += 1
+            conn.attach_internet_gateway(gateway.id, vpc.id)
+            break
+        except boto.exception.EC2ResponseError:
+            time.sleep(1)
+            if attempts > 5:
+                raise
 
     return gateway
 
@@ -93,6 +105,18 @@ def _create_subnets(conn, vpc, route_table):
         subnet = conn.create_subnet(vpc.id,
                                     "10.0.{0}.0/20".format(current_ip),
                                     availability_zone=zone)
+
+        # state polling copied from the following
+        # http://stackoverflow.com/questions/22263300/aws-boto-how-to-refresh-subnet-state-after-creating-it-its-stuck-in-pending
+        while subnet.state == 'pending':
+            """Waiting for AWS subnet creation to complete"""
+            subnets = conn.get_all_subnets()
+            for item in subnets:
+                """Getting AWS subnet status"""
+                if item.id == subnet.id:
+                    subnet.state = item.state
+                    time.sleep(5)
+
         subnet.add_tag('Name', tag)
 
         # associate route table
