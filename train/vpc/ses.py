@@ -31,6 +31,10 @@ def email_credentials():
     """Email all user information and credentials listed in USER_FILE"""
 
     check_email_template()
+    SES_REGION = check_ses_region('SES_REGION')
+    SES_FROM_EMAIL = check_env('SES_FROM_EMAIL')
+    SES_FROM_NAME = check_env('SES_FROM_NAME', ' ')
+
     conn = boto.ses.connect_to_region(SES_REGION,
                                       aws_access_key_id=AWS_ACCESS_KEY_ID,
                                       aws_secret_access_key=AWS_SECRET_ACCESS_KEY)

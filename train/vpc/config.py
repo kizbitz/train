@@ -72,15 +72,8 @@ AWS_REGION = check_env('AWS_REGION')
 AWS_ACCESS_KEY_ID = check_env('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = check_env('AWS_SECRET_ACCESS_KEY')
 
-# AWS Simple Email Service
-SES_REGION = check_ses_region('SES_REGION')
-SES_FROM_EMAIL = check_env('SES_FROM_EMAIL')
-
 # Optional environment variables
 # ==============================
-
-# AWS SES 'From' Name
-SES_FROM_NAME = check_env('SES_FROM_NAME', ' ')
 
 # Tag for VPC, labs, instances, etc...
 VPC = check_env('VPC', 'train')
@@ -94,6 +87,10 @@ USER_FILE = check_user_file(VPC, os.environ.get('USER_FILE'))
 # Email Template
 EMAIL_TEMPLATE = get_email_template(VPC, os.environ.get('EMAIL_TEMPLATE'))
 
+# Note: Checked in ses.py
+# SES_REGION
+# SES_FROM_EMAIL
+# SES_FROM_NAME
 
 # Other
 # =====

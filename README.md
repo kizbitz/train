@@ -63,11 +63,7 @@ AWS_ACCESS_KEY_ID=<id>
 AWS_SECRET_ACCESS_KEY=<key>
 
 # AWS EC2 Configuration
-AWS_REGION=<region>
-
-# AWS SES Configuration
-SES_REGION=<region>
-SES_FROM_EMAIL=<email-address>
+AWS_REGION=<ec2-region>
 ```
 
 [Available AWS EC2 Regions](http://docs.aws.amazon.com/general/latest/gr/rande.html#ec2_region)
@@ -85,38 +81,21 @@ SES_FROM_EMAIL=<email-address>
 | Asia Pacific (Seoul)	| ap-northeast-2 |
 | South America (Sao Paulo)	| sa-east-1 |
 
-[Available AWS SES Regions](http://docs.aws.amazon.com/general/latest/gr/rande.html#ses_region)
+Note: `TRAINER` (username) is only used for tagging VCP objects only. It is not tied to any permissions.
 
-| Region Name | Region |
-| --- | --- |
-| US East (N. Virginia)	| us-east-1 |
-| US West (Oregon) | us-west-2 |
-| EU (Ireland) | eu-west-1 |
+### Host Volume
 
-Notes:
+A local host volume needs to be mounted inside the container to `/host` when running the container. The scripts will output all user keys and user instance information into a `/host/<VPC>` directory.
 
-- `TRAINER` (username) is only used for tagging VCP objects only. It is not tied to any permissions.
-- `SES_REGION` and `SES_FROM_EMAIL` are required environment variables (even if not using any email features)
-
-#### AWS SES Minimum Requirements
-
-In order to send emails with **train** you must:
-
-- Verify a sending email address on your AWS account. See: http://docs.aws.amazon.com/ses/latest/DeveloperGuide/verify-email-addresses.html#verify-email-addresses-procedure
-- Request a limit increase and have your account migrated out of sandboxed mode. See: http://docs.aws.amazon.com/ses/latest/DeveloperGuide/request-production-access.html
-
-Recommended: 
-
-- Use a custom **MAIL FROM** domain: http://docs.aws.amazon.com/ses/latest/DeveloperGuide/mail-from.html
-- Authenticate your emails. See: http://docs.aws.amazon.com/ses/latest/DeveloperGuide/authentication.html
-
----
+## Optional
 
 #### Optional Environment Variables
 
 ```
-# 'From' name for emails
-SES_FROM_NAME=Docker Training
+# AWS SES
+SES_REGION=<ses-region>
+SES_FROM_EMAIL=<email-address>
+SES_FROM_NAME=<alternate-from-text>
 
 # Root lab directory
 LAB_DIR=<lab-directory>
@@ -131,9 +110,26 @@ VPC=<vpc-tag>
 EMAIL_TEMPLATE=<path-to-template-file-in-container>
 ```
 
-### Host Volume
+### AWS SES Minimum Requirements
 
-A local host volume needs to be mounted inside the container to `/host` when running the container. The scripts will output all user keys and user instance information into a `/host/<VPC>` directory.
+In order to send emails with **train** you must (at a minimum):
+
+- Set the `SES_REGION` and `SES_FROM_EMAIL` environment variables.
+- Verify a sending email address on your AWS account. See: http://docs.aws.amazon.com/ses/latest/DeveloperGuide/verify-email-addresses.html#verify-email-addresses-procedure
+- Request a limit increase and have your account migrated out of sandboxed mode. See: http://docs.aws.amazon.com/ses/latest/DeveloperGuide/request-production-access.html
+
+Recommended AWS SES configuration: 
+
+- Use a custom **MAIL FROM** domain: http://docs.aws.amazon.com/ses/latest/DeveloperGuide/mail-from.html
+- Authenticate your emails. See: http://docs.aws.amazon.com/ses/latest/DeveloperGuide/authentication.html
+
+[Available AWS SES Regions](http://docs.aws.amazon.com/general/latest/gr/rande.html#ses_region)
+
+| Region Name | Region |
+| --- | --- |
+| US East (N. Virginia)	| us-east-1 |
+| US West (Oregon) | us-west-2 |
+| EU (Ireland) | eu-west-1 |
 
 ## Walk-through - Personal Use
 
