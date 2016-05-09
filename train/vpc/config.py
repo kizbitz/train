@@ -11,11 +11,10 @@ def check_env(env, default=None):
     """Check/Set environment variables"""
 
     if not os.environ.get(env) and not default:
-        print "Error: {0} environment variable not set".format(variable)
+        print "Error: '{0}' environment variable not set".format(env)
         sys.exit()
 
     return os.environ.get(env, default)
-
 
 
 def check_user_file(VPC, user_file):
@@ -44,6 +43,24 @@ def get_email_template(VPC, template):
         return '/home/train/train/templates/email.py'
 
 
+def check_ses_region(env):
+    """Check/Set SES_REGION environment variable"""
+
+    # Available SES Regions: http://docs.aws.amazon.com/general/latest/gr/rande.html#ses_region
+    SES_REGIONS = ['us-east-1', 'us-west-2', 'eu-west-1']
+
+    if not os.environ.get(env):
+        print "Error: '{0}' environment variable not set".format(env)
+        sys.exit()
+    else:
+        if not os.environ.get(env) in SES_REGIONS:
+            print "Error: The '{0}' region specified is not one of the available SES regions".format(os.environ.get(env))
+            print "       See: http://docs.aws.amazon.com/general/latest/gr/rande.html#ses_region"
+            sys.exit()
+        else:
+            return os.environ.get(env)
+
+
 # Required environment variables
 # ==============================
 
@@ -54,7 +71,6 @@ TRAINER = check_env('TRAINER')
 AWS_REGION = check_env('AWS_REGION')
 AWS_ACCESS_KEY_ID = check_env('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = check_env('AWS_SECRET_ACCESS_KEY')
-
 
 # Optional environment variables
 # ==============================
@@ -68,9 +84,13 @@ LAB_DIR = check_env('LAB_DIR', '/home/train/train/labs/')
 # Full path to user configuration file
 USER_FILE = check_user_file(VPC, os.environ.get('USER_FILE'))
 
-# Template file for emails
+# Email Template
 EMAIL_TEMPLATE = get_email_template(VPC, os.environ.get('EMAIL_TEMPLATE'))
 
+# Note: Checked in ses.py
+# SES_REGION
+# SES_FROM_EMAIL
+# SES_FROM_NAME
 
 # Other
 # =====

@@ -2,12 +2,10 @@
 # -*- coding: utf-8 -*-
 
 # prompts
-from_email = raw_input("Enter the 'from email address' for the outgoing message: ")
-from_name =  raw_input("Enter the 'from name' for the outgoing message: ")
-subject =  raw_input("Enter the 'Subject' for the outgoing message: ")
+subject = raw_input("Enter the 'Subject' for the outgoing message: ")
 
 # static
-text = """Welcome to Docker training!
+body = """Welcome to Docker training!
 
 This email contains files and other resources you need to complete the training.
 

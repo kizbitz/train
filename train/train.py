@@ -9,10 +9,10 @@ import sys
 import boto.vpc
 
 from vpc.config import *
-import vpc.email as email
 import vpc.instances as inst
 import vpc.labs as labs
 import vpc.register as register
+import vpc.ses as ses
 import vpc.util as util
 import vpc.vpc as vpc
 
@@ -92,7 +92,7 @@ def process():
     if args.r:
         register.registration(conn, user_vpc, args.r)
     if args.e:
-        email.email_credentials(conn)
+        ses.email_credentials()
     if args.l:
         labs.lab_info(conn, user_vpc)
     if args.d:

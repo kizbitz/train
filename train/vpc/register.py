@@ -6,7 +6,7 @@ import string
 import sys
 
 from config import *
-import email
+import ses
 import labs
 from util import check_email_template
 import vpc
@@ -15,9 +15,6 @@ import vpc
 def _checks():
     """Requirements"""
 
-    if not os.environ.get("MANDRILL_KEY"):
-        print "\nERROR: Required environment variable 'MANDRILL_KEY' not set!\n"
-        sys.exit()
     if os.environ.get('USER_FILE'):
         print 'ERROR: USER_FILE environment variable must not be set.'
         sys.exit()
@@ -85,7 +82,7 @@ def registration(conn, user_vpc, lab):
 
         vpc.create_key_pairs()
         labs.launch_lab(conn, user_vpc, lab)
-        email.email_credentials(conn)
+        ses.email_credentials()
 
         print '\n'
         print '-' * 35

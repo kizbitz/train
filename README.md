@@ -40,7 +40,7 @@ The tools provide a simple way to quickly create, manage, and destroy:
 
 ### AWS Permissions
 
-It's recommended you create a separate AWS account separate from your prod, dev, staging accounts. **Train** requires extensive IAM roles/permissions. (Create, list, and destroy: VPC's, EC2 instances/objects, IAM users, etc...)
+It's recommended you create an AWS account that is separate from your prod, dev, staging accounts. **Train** requires extensive IAM roles/permissions. (Create, list, and destroy: VPC's, EC2 instances/objects, IAM users, etc...)
 
 Any user created with the `train-users` tool has the following policy: https://github.com/kizbitz/train/blob/master/train/vpc/users.py#L12-L41
 
@@ -55,13 +55,18 @@ Environment variables can be set in the container by:
 #### Required Environment Variables
 
 ```
+# Username
 TRAINER=jbaker
-AWS_REGION=<region>
+
+# AWS Authentication
 AWS_ACCESS_KEY_ID=<id>
 AWS_SECRET_ACCESS_KEY=<key>
+
+# AWS EC2 Configuration
+AWS_REGION=<ec2-region>
 ```
 
-Available AWS Regions
+[Available AWS EC2 Regions](http://docs.aws.amazon.com/general/latest/gr/rande.html#ec2_region)
 
 | Region Name | Region |
 | --- | --- |
@@ -76,19 +81,22 @@ Available AWS Regions
 | Asia Pacific (Seoul)	| ap-northeast-2 |
 | South America (Sao Paulo)	| sa-east-1 |
 
----
+Note: `TRAINER` (username) is only used for tagging VCP objects only. It is not tied to any permissions.
 
-When using the bulk registration feature or registration mode a [Mandrill API Key](https://www.mandrill.com/) is also required
+### Host Volume
 
-```
-MANDRILL_KEY=<mandrill-key>
-```
+A local host volume needs to be mounted inside the container to `/host` when running the container. The scripts will output all user keys and user instance information into a `/host/<VPC>` directory.
 
-Note: TRAINER (username) is only used for tagging VCP objects only. It is not tied to any permissions.
+## Optional
 
 #### Optional Environment Variables
 
 ```
+# AWS SES
+SES_REGION=<ses-region>
+SES_FROM_EMAIL=<email-address>
+SES_FROM_NAME=<alternate-from-text>
+
 # Root lab directory
 LAB_DIR=<lab-directory>
 
@@ -102,9 +110,26 @@ VPC=<vpc-tag>
 EMAIL_TEMPLATE=<path-to-template-file-in-container>
 ```
 
-### Host Volume
+### AWS SES Minimum Requirements
 
-A local host volume needs to be mounted inside the container to `/host` when running the container. The scripts will output all user keys and user instance information into a `/host/<VPC>` directory.
+In order to send emails with **train** you must (at a minimum):
+
+- Set the `SES_REGION` and `SES_FROM_EMAIL` environment variables.
+- Verify a sending email address on your AWS account. See: http://docs.aws.amazon.com/ses/latest/DeveloperGuide/verify-email-addresses.html#verify-email-addresses-procedure
+- Request a limit increase and have your account migrated out of sandboxed mode. See: http://docs.aws.amazon.com/ses/latest/DeveloperGuide/request-production-access.html
+
+Recommended AWS SES configuration: 
+
+- Use a custom **MAIL FROM** domain: http://docs.aws.amazon.com/ses/latest/DeveloperGuide/mail-from.html
+- Authenticate your emails. See: http://docs.aws.amazon.com/ses/latest/DeveloperGuide/authentication.html
+
+[Available AWS SES Regions](http://docs.aws.amazon.com/general/latest/gr/rande.html#ses_region)
+
+| Region Name | Region |
+| --- | --- |
+| US East (N. Virginia)	| us-east-1 |
+| US West (Oregon) | us-west-2 |
+| EU (Ireland) | eu-west-1 |
 
 ## Walk-through - Personal Use
 
@@ -135,11 +160,17 @@ Create a Docker environment file with required environment variables:
 ```
 vagrant@dockertest:~/sandbox$ vim train.env
 vagrant@dockertest:~/sandbox$ cat train.env
+
 TRAINER=jbaker
 VPC=demo
 AWS_REGION=us-east-1
 AWS_ACCESS_KEY_ID=<your-aws-access-key>
 AWS_SECRET_ACCESS_KEY=<your-aws-secret-access-key>
+
+# SES Configuration
+SES_REGION=us-east-1
+SES_FROM_NAME=Docker Training
+SES_FROM_EMAIL=no-reply@train.docker.com
 ```
 
 Run the container with the environment file and mount a host volume:
@@ -626,7 +657,7 @@ Email all users their lab instance information and keys:
 
 Note:
 
-- Requires a MANDRILL_KEY - See requirements section above.
+- Requires that you have SES set up correctly on your account - See requirements section above.
 - Recommended that you use a customized email template. See: https://github.com/kizbitz/train/blob/master/train/vpc/config.py#L58
   - By default **train** will look for an email template in: `/host/<VPC>/email.py`
   - If `/host/<VPC>/email` does not exist the template that will be used is located here: https://github.com/kizbitz/train/blob/master/train/templates/email.py
@@ -654,8 +685,6 @@ This mode:
 - Displays the welcome message and prompts for an email
 - Creates a username from the email and creates the key pairs
 - Launches the lab and then emails the user the connection info and keys
-
-MANDRILL_KEY required and using a custom email template is recommend.
 
 Notes:
 
