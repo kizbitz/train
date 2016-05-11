@@ -33,6 +33,11 @@ POLICY = '''{
       "Resource": "*"
     },
     {
+      "Effect": "Allow",
+      "Action": "ses:*",
+      "Resource": "*"
+    },
+    {
       "Action": "iam:*",
       "Effect": "Allow",
       "Resource": "*"
