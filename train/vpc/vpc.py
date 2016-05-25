@@ -222,6 +222,16 @@ def _configure_default_security_group(conn, vpc):
                     cidr_ip='0.0.0.0/0')
 
     sg[0].authorize(ip_protocol='tcp',
+                    from_port='6783',
+                    to_port='6783',
+                    cidr_ip='0.0.0.0/0')
+
+    sg[0].authorize(ip_protocol='udp',
+                    from_port='6783',
+                    to_port='6783',
+                    cidr_ip='0.0.0.0/0')
+
+    sg[0].authorize(ip_protocol='tcp',
                     from_port='8000',
                     to_port='8000',
                     cidr_ip='0.0.0.0/0')
