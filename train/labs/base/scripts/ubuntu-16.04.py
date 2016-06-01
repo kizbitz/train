@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-PRIMARY_OS = 'Ubuntu-15.04'
+PRIMARY_OS = 'Ubuntu-16.04'
 PRIMARY = '''#!/bin/sh
 #
 FQDN="{fqdn}"
