@@ -64,7 +64,8 @@ def create_amis(conn, user_vpc, lab_tag):
 
         conn.create_tags(ami, tags)
 
-    print "Completed ..."
+    print "AMI build trigger completed successfully ..."
+    print "Note: It could take 15-20 minutes for the AMI build to complete."
 
 
 def delete_amis(conn, lab_tag):
