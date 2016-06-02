@@ -23,6 +23,8 @@ sleep 5
 # docker os release
 curl -sSL https://get.docker.com/ | sh
 
+usermod -aG docker ubuntu
+
 # updates
 apt-get update
 apt-get -y upgrade

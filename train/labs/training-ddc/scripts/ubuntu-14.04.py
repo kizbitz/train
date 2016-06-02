@@ -25,7 +25,7 @@ from distutils.util import strtobool
 #else:
     #txt = 'docker run --name ucp --rm -v /var/run/docker.sock:/var/run/docker.sock docker/ucp images'
 
-# Preinstall UCP just for the Dockercon training classes
+# Preinstall UCP for the Dockercon training classes
 txt = 'docker run --rm --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp install --san $HOSTNAME --host-address $(curl http://169.254.169.254/latest/meta-data/public-ipv4)'
 
 # scripts
@@ -48,12 +48,12 @@ sleep 5
 # docker
 curl -sSL https://get.docker.com/ | sh
 
+usermod -aG docker ubuntu
+
 # updates
 apt-get update
 apt-get -y upgrade
 apt-get install -y git tree jq linux-image-extra-4.2.0-23-generic linux-image-4.2.0.23-generic
-
-usermod -aG docker ubuntu
 
 # docker compose
 curl -L https://github.com/docker/compose/releases/download/1.6.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
