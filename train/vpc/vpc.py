@@ -115,7 +115,7 @@ def _create_subnets(conn, vpc, route_table):
                 """Getting AWS subnet status"""
                 if item.id == subnet.id:
                     subnet.state = item.state
-                    time.sleep(5)
+                    time.sleep(1)
 
         subnet.add_tag('Name', tag)
 
