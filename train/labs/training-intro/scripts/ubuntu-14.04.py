@@ -81,11 +81,3 @@ def pre_process():
 def post_process():
     """Executed after launching instances in AWS"""
     pass
-
-
-# Notes
-'''
-Script requires:
-    {fqdn}
-    {dinfo}
-'''
