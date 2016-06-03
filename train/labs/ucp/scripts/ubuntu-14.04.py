@@ -21,7 +21,7 @@ def yn_prompt(query):
 install = yn_prompt("\nInstall UCP using 'non-interactive' mode on the controller instance?")
 
 if install:
-    txt = 'docker run --rm --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp install --san $HOSTNAME --host-address $(curl http://169.254.169.254/latest/meta-data/public-ipv4)'
+    txt = 'docker run --rm --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp install --host-address $(curl http://169.254.169.254/latest/meta-data/public-ipv4)'
 else:
     txt = 'docker run --name ucp --rm -v /var/run/docker.sock:/var/run/docker.sock docker/ucp images'
 
