@@ -4,29 +4,8 @@
 import sys
 from distutils.util import strtobool
 
-#def yn_prompt(query):
-    #"""Generic Y/N Prompt"""
-
-    #sys.stdout.write('%s [y/n]: ' % query)
-    #val = raw_input()
-    #try:
-        #ret = strtobool(val)
-    #except ValueError:
-        #sys.stdout.write('Please answer with a y/n\n')
-        #return yn_prompt(query)
-    #return ret
-
-
-## prompts
-#install = yn_prompt("\nInstall UCP using 'non-interactive' mode on the controller instance?")
-
-#if install:
-    #txt = 'docker run --rm --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp install --san $HOSTNAME --host-address $(curl http://169.254.169.254/latest/meta-data/public-ipv4)'
-#else:
-    #txt = 'docker run --name ucp --rm -v /var/run/docker.sock:/var/run/docker.sock docker/ucp images'
-
 # Preinstall UCP for the Dockercon training classes
-txt = 'docker run --rm --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp install --san $HOSTNAME --host-address $(curl http://169.254.169.254/latest/meta-data/public-ipv4)'
+txt = 'docker run --rm --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp install --host-address $(curl http://169.254.169.254/latest/meta-data/public-ipv4)'
 
 # scripts
 PRIMARY_OS = 'Ubuntu-14.04'
