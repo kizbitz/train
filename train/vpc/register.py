@@ -26,17 +26,16 @@ def _checks():
 def set_username(user):
     """Create username from email"""
 
-    username = user.split('@')[0].lower()
+    count = 0
+    username = user.split('@')[0].lower().strip()
 
     for c in string.punctuation:
         username = username.replace(c, '')
 
-    if os.path.exists('/host/{0}/users/{1}'.format(VPC, username)):
-        count = 1
-        username = username + str(count)
-        while os.path.exists('/host/{0}/users/{1}'.format(VPC, username)):
-            count += 1
-            username = username + str(count)
+    basename = username
+    while os.path.exists('/host/{0}/users/{1}'.format(VPC, username)):
+        count += 1
+        username = basename + str(count)
 
     return username
 
