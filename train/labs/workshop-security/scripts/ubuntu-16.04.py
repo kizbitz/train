@@ -22,6 +22,14 @@ curl -sSL https://get.docker.com/ | sh
 
 usermod -aG docker ubuntu
 
+# for this workshop we want make sure we have 1.11.2
+systemctl stop docker
+mkdir /usr/bin/original-docker
+mv /usr/bin/docker* /usr/bin/original-docker/
+wget https://get.docker.com/builds/Linux/x86_64/docker-1.11.2.tgz -O /tmp/docker-1.11.2.tgz
+tar -xf /tmp/docker-1.11.2.tgz -C /usr/bin --strip 1
+systemctl start docker
+
 # updates
 apt-get update
 apt-get -y upgrade

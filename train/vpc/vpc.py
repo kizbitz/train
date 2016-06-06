@@ -61,7 +61,6 @@ def _create_gateway(conn, vpc):
     print 'Creating gateway: {0} ...'.format(IGW)
 
     gateway = conn.create_internet_gateway()
-    gateway.add_tag('Name', IGW)
 
     attempts=0
     while True:
@@ -69,6 +68,7 @@ def _create_gateway(conn, vpc):
             # workaround for race where the gateway may not be ready yet
             attempts += 1
             conn.attach_internet_gateway(gateway.id, vpc.id)
+            gateway.add_tag('Name', IGW)
             break
         except boto.exception.EC2ResponseError:
             time.sleep(1)
