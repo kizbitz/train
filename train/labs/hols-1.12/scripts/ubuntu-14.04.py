@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 # prompts
+gh_name = raw_input('Enter your Github username: ')
+gh_pass = raw_input('Enter your Github password: ')
 
 # instance configs
 PRIMARY_OS = 'Ubuntu-14.04'
@@ -22,6 +24,8 @@ sleep 5
 
 # docker os release
 curl -sSL https://experimental.docker.com/ | sh
+#curl -O https://github.com/docker/docker-1.12-integration/releases/download/TP6/docker-1.12.0-dev.tgz /tmp/docker.tgz
+#tar -xvzf /tmp/docker.tgz --strip=1 -C /usr/bin/
 
 # updates
 apt-get update
@@ -31,22 +35,6 @@ apt-get install -y git tree jq linux-image-extra-4.2.0-23-generic linux-image-4.
 # compose
 curl -L https://github.com/docker/compose/releases/download/1.7.1/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
-
-# output cleanup script
-cat >/usr/local/bin/docker-reset <<EOL
-#!/bin/bash
-sudo service docker stop
-# /etc/default/docker
-sudo rm /etc/default/docker
-sudo cp /etc/default/docker.bak /etc/default/docker
-unset -v DOCKER_HOST
-unset -v DOCKER_OPTS
-unset -v DOCKER_CONTENT_TRUST
-sudo rm -r /var/lib/docker
-sudo service docker start
-EOL
-
-chmod +x /usr/local/bin/docker-reset
 
 service docker stop
 rm -r /var/lib/docker
