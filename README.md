@@ -294,6 +294,9 @@ jbaker-demo:us-east-1:~$
 
 This particular lab launches a base Ubuntu 14.04 instances with an attached volume, upgrades the kernel to 4.0.23, installs the latest Docker CS engine and Docker Trusted registry, then configures the DTR storage option to point to the attached volume. See: https://github.com/kizbitz/train/tree/master/train/labs/dtr-volume
 
+Note that launching a lab may cause updates, configuration changes or the installation of tools (such as Docker) which may require some time to complete and may result in the instance rebooting.
+It is advisable to wait until this process has fully completed before attempting to use the launched lab.
+
 Launch this lab:
 
 ```
