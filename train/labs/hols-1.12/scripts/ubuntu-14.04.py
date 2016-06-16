@@ -45,6 +45,7 @@ service hostname restart
 sleep 5
 
 {dinfo}
+reboot
 '''
 
 
