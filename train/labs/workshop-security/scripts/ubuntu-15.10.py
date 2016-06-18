@@ -4,7 +4,7 @@
 # prompts
 
 # instance configs
-PRIMARY_OS = 'Ubuntu-16.04'
+PRIMARY_OS = 'Ubuntu-15.10'
 PRIMARY = '''#!/bin/sh
 
 FQDN="{fqdn}"
@@ -14,11 +14,13 @@ export DEBIAN_FRONTEND=noninteractive
 # locale
 sudo locale-gen en_US.UTF-8
 
-# hostname
+# /etc/hostname - /etc/hosts
+sed -i "1 c\\127.0.0.1 $FQDN localhost" /etc/hosts
 hostnamectl set-hostname $FQDN
 
 # docker os release
 curl -sSL https://get.docker.com/ | sh
+service docker start
 
 usermod -aG docker ubuntu
 
