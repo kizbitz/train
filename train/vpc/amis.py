@@ -122,5 +122,5 @@ US_WEST_2 = {
     'Ubuntu-14.04': 'ami-1b471c2b',
     'Ubuntu-15.10': 'ami-0af8026a',
     'Ubuntu-16.04': 'ami-06b94666',
-    'JTU-LDAP': 'ami-be39d1de',
+    'JTU-LDAP': 'ami-25f83c45',
 }
