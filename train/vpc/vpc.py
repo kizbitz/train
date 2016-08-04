@@ -183,93 +183,18 @@ def _configure_default_security_group(conn, vpc):
     sg[0].authorize(ip_protocol="-1", src_group=sg[0])
 
     # add local IP
-    #local_ip = commands.getstatusoutput('curl -s icanhazip.com')[1]
-    #print 'Adding your current location IP ({0}) to default security group ...'.format(local_ip)
-    #sg[0].authorize(ip_protocol='tcp',
-                    #from_port='0',
-                    #to_port='65535',
-                    #cidr_ip=local_ip + '/32')
+    local_ip = commands.getstatusoutput('curl -s icanhazip.com')[1]
+    print 'Adding your current location IP ({0}) to default security group ...'.format(local_ip)
+    sg[0].authorize(ip_protocol='tcp',
+                    from_port='0',
+                    to_port='65535',
+                    cidr_ip=local_ip + '/32')
 
     # common
-    sg[0].authorize(ip_protocol='tcp',
-                    from_port='22',
-                    to_port='22',
-                    cidr_ip='0.0.0.0/0')
-
-    sg[0].authorize(ip_protocol='tcp',
-                    from_port='80',
-                    to_port='80',
-                    cidr_ip='0.0.0.0/0')
-
-    sg[0].authorize(ip_protocol='tcp',
-                    from_port='443',
-                    to_port='443',
-                    cidr_ip='0.0.0.0/0')
-
-    sg[0].authorize(ip_protocol='tcp',
-                    from_port='2375',
-                    to_port='2376',
-                    cidr_ip='0.0.0.0/0')
-
-    sg[0].authorize(ip_protocol='tcp',
-                    from_port='3375',
-                    to_port='3376',
-                    cidr_ip='0.0.0.0/0')
-
-    sg[0].authorize(ip_protocol='udp',
-                    from_port='4789',
-                    to_port='4789',
-                    cidr_ip='0.0.0.0/0')
-
-    sg[0].authorize(ip_protocol='tcp',
-                    from_port='5000',
-                    to_port='5000',
-                    cidr_ip='0.0.0.0/0')
-
-    sg[0].authorize(ip_protocol='tcp',
-                    from_port='6783',
-                    to_port='6783',
-                    cidr_ip='0.0.0.0/0')
-
-    sg[0].authorize(ip_protocol='udp',
-                    from_port='6783',
-                    to_port='6783',
-                    cidr_ip='0.0.0.0/0')
-
-    sg[0].authorize(ip_protocol='tcp',
-                    from_port='7946',
-                    to_port='7946',
-                    cidr_ip='0.0.0.0/0')
-
-    sg[0].authorize(ip_protocol='udp',
-                    from_port='7946',
-                    to_port='7946',
-                    cidr_ip='0.0.0.0/0')
-
-    sg[0].authorize(ip_protocol='tcp',
-                    from_port='8000',
-                    to_port='8000',
-                    cidr_ip='0.0.0.0/0')
-
-    sg[0].authorize(ip_protocol='tcp',
-                    from_port='8080',
-                    to_port='8080',
-                    cidr_ip='0.0.0.0/0')
-
-    sg[0].authorize(ip_protocol='tcp',
-                    from_port='9999',
-                    to_port='9999',
-                    cidr_ip='0.0.0.0/0')
-
-    sg[0].authorize(ip_protocol='tcp',
-                    from_port='12376',
-                    to_port='12376',
-                    cidr_ip='0.0.0.0/0')
-
-    sg[0].authorize(ip_protocol='tcp',
-                    from_port='12379',
-                    to_port='12386',
-                    cidr_ip='0.0.0.0/0')
+    #sg[0].authorize(ip_protocol='tcp',
+                    #from_port='22',
+                    #to_port='22',
+                    #cidr_ip='0.0.0.0/0')
 
 
 def create_interface(subnet_id, sids):
