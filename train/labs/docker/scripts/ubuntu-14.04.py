@@ -111,7 +111,7 @@ sudo usermod -aG docker ubuntu
 # updates
 apt-get update
 apt-get -y upgrade
-apt-get install -y git tree jq linux-image-extra-4.2.0-23-generic linux-image-4.2.0.23-generic
+apt-get install -y git tree jq linux-image-extra-4.2.0-30-generic linux-image-4.2.0.30-generic
 
 {{dinfo}}
 reboot
