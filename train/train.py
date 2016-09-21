@@ -9,6 +9,7 @@ import sys
 import boto.vpc
 
 from vpc.config import *
+import vpc.audit as audit
 import vpc.instances as inst
 import vpc.labs as labs
 import vpc.register as register
@@ -63,6 +64,10 @@ parser.add_argument('-t',
                     help='Terminate environment (VPC and local files)',
                     action='store_true', required=False)
 
+parser.add_argument('-s',
+                    help='Perform an AWS audit and create a status report',
+                    action='store_true', required=False)
+
 args = parser.parse_args()
 
 
@@ -101,6 +106,8 @@ def process():
         inst.terminate_all_instances(conn, user_vpc)
     if args.t:
         vpc.terminate_environment(conn, user_vpc)
+    if args.s:
+        audit.generate_report(conn)
 
 
 if __name__ == '__main__':
