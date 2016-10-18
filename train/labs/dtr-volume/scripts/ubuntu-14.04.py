@@ -20,7 +20,7 @@ sleep 5
 # packages
 apt-get update
 apt-get -y upgrade
-apt-get install -y git tree jq xfsprogs linux-image-extra-4.2.0-23-generic linux-image-4.2.0.23-generic
+apt-get install -y git tree jq xfsprogs linux-image-extra-4.2.0-30-generic linux-image-4.2.0.30-generic
 
 # docker cs release
 wget -qO- 'https://pgp.mit.edu/pks/lookup?op=get&search=0xee6d536cf7dc86e2d7d56f59a178ac6c6238f52e' | sudo apt-key add --import
