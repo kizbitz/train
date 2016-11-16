@@ -21,7 +21,7 @@ def yn_prompt(query):
 install = yn_prompt("\nInstall UCP using 'non-interactive' mode on the controller instance?")
 
 if install:
-    txt = 'docker run --rm --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp install --host-address $(curl http://169.254.169.254/latest/meta-data/public-ipv4)'
+    txt = 'docker run --rm --name ucp -v /var/run/docker.sock:/var/run/docker.sock docker/ucp install --host-address $(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)'
 else:
     txt = 'docker run --name ucp --rm -v /var/run/docker.sock:/var/run/docker.sock docker/ucp images'
 
@@ -44,7 +44,7 @@ service hostname restart
 sleep 5
 
 # docker
-curl -sSL https://get.docker.com/ | sh
+curl -SLf https://packages.docker.com/1.12/install.sh | repo=main sh
 
 # updates
 apt-get update
@@ -90,7 +90,7 @@ apt-get -y upgrade
 apt-get install -y git tree jq linux-image-extra-4.2.0-30-generic linux-image-4.2.0.30-generic
 
 # docker
-curl -sSL https://get.docker.com/ | sh
+curl -SLf https://packages.docker.com/1.12/install.sh | repo=main sh
 
 usermod -aG docker ubuntu
 
