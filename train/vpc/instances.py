@@ -262,7 +262,7 @@ def launch_instances(conn, user_vpc, script, lab,
 
     # wait for all instances to finish booting
     print "Waiting for instances to initialize ..."
-    time.sleep(20)
+    time.sleep(30)
     for instance in instances:
         while instance[1].state != 'running':
             print "Waiting for instance '{0}-{1}' to initialize ...".format(instance[2],
