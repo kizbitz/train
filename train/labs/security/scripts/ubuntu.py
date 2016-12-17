@@ -8,6 +8,7 @@ FQDN="{fqdn}"
 
 # hostname
 hostnamectl set-hostname $FQDN
+sed -i "1 c\\127.0.0.1 $FQDN localhost" /etc/hosts
 
 # packages
 apt-get update
@@ -18,7 +19,7 @@ apt-get install -y apt-transport-https ca-certificates linux-image-extra-$(uname
 apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
 echo "deb https://apt.dockerproject.org/repo ubuntu-xenial main" > /etc/apt/sources.list.d/docker.list
 apt-get update
-apt-get install -y docker-engine
+apt-get install -y docker-engine=1.12.0-0~xenial
 usermod -aG docker ubuntu
 
 # compose
