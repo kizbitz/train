@@ -68,10 +68,10 @@ docker = docker.lower()
 if docker == '' or docker =='latest':
     txt = 'curl -sSL https://get.docker.com/ | sh'
 elif docker == 'cs':
-    txt = "wget -qO- 'https://pgp.mit.edu/pks/lookup?op=get&search=0xee6d536cf7dc86e2d7d56f59a178ac6c6238f52e' | sudo apt-key add --import\n" + \
-          'sudo apt-get update && sudo apt-get install apt-transport-https\n' + \
-          'echo "deb https://packages.docker.com/1.12/apt/repo ubuntu-trusty main" | tee /etc/apt/sources.list.d/docker.list\n' + \
-          'sudo apt-get update && sudo apt-get -y install docker-engine\n'
+    txt = "curl -s 'https://sks-keyservers.net/pks/lookup?op=get&search=0xee6d536cf7dc86e2d7d56f59a178ac6c6238f52e' | apt-key add --import\n" + \
+          'apt-get update && apt-get install apt-transport-https\n' + \
+          'echo "deb https://packages.docker.com/1.13/apt/repo ubuntu-trusty main" | tee /etc/apt/sources.list.d/docker.list\n' + \
+          'apt-get update && apt-get -y install docker-engine\n'
 elif docker == 'rc':
     txt = 'curl -faSL https://test.docker.com/ | sh'
 elif docker == 'experimental':
@@ -95,7 +95,7 @@ FQDN="{{fqdn}}"
 export DEBIAN_FRONTEND=noninteractive
 
 # locale
-sudo locale-gen en_US.UTF-8
+locale-gen en_US.UTF-8
 
 # /etc/hostname - /etc/hosts
 sed -i "1 c\\127.0.0.1 $FQDN localhost" /etc/hosts
@@ -106,12 +106,12 @@ sleep 5
 # docker
 {0}
 
-sudo usermod -aG docker ubuntu
+usermod -aG docker ubuntu
 
 # updates
 apt-get update
 apt-get -y upgrade
-apt-get install -y git tree jq linux-image-extra-4.2.0-30-generic linux-image-4.2.0.30-generic
+apt-get install -y git tree jq linux-image-extra-$(uname -r) linux-image-extra-virtual
 
 {{dinfo}}
 reboot
