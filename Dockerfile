@@ -14,7 +14,6 @@ RUN apt-get update && apt-get install -y \
 
 RUN pip install --upgrade \
     boto \
-    mandrill \
     pip \
     requests \
     toml
