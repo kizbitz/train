@@ -2,4 +2,4 @@ Name: docker
 
 Description:
 
-Prompt and install a specific version of Docker with latest kernel.
+Prompt and install a specific version of Docker

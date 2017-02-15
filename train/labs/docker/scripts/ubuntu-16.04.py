@@ -69,9 +69,9 @@ if docker == '' or docker =='latest':
     txt = 'curl -sSL https://get.docker.com/ | sh'
 elif docker == 'cs':
     txt = "curl -s 'https://sks-keyservers.net/pks/lookup?op=get&search=0xee6d536cf7dc86e2d7d56f59a178ac6c6238f52e' | apt-key add --import\n" + \
-          'apt-get update && apt-get install apt-transport-https\n' + \
-          'echo "deb https://packages.docker.com/1.13/apt/repo ubuntu-trusty main" | tee /etc/apt/sources.list.d/docker.list\n' + \
-          'apt-get update && apt-get -y install docker-engine\n'
+          'echo "deb https://packages.docker.com/1.13/apt/repo ubuntu-xenial main" | tee /etc/apt/sources.list.d/docker.list\n' + \
+          'apt-get update && apt-get install -y docker-engine\n'
+
 elif docker == 'rc':
     txt = 'curl -faSL https://test.docker.com/ | sh'
 elif docker == 'experimental':
@@ -87,7 +87,7 @@ else:
 
 
 # instance configs
-PRIMARY_OS = 'Ubuntu-14.04'
+PRIMARY_OS = 'Ubuntu-16.04'
 PRIMARY = '''#!/bin/sh
 
 FQDN="{{fqdn}}"
@@ -97,21 +97,26 @@ export DEBIAN_FRONTEND=noninteractive
 # locale
 locale-gen en_US.UTF-8
 
-# /etc/hostname - /etc/hosts
+# hostname
+hostnamectl set-hostname $FQDN
 sed -i "1 c\\127.0.0.1 $FQDN localhost" /etc/hosts
-echo $FQDN > /etc/hostname
-service hostname restart
-sleep 5
+
+# updates
+apt-get update && apt-get install -y \
+    apt-transport-https \
+    git \
+    jq \
+    linux-image-extra-$(uname -r) \
+    linux-image-extra-virtual \
+    tree
 
 # docker
 {0}
-
 usermod -aG docker ubuntu
 
-# updates
-apt-get update
-apt-get -y upgrade
-apt-get install -y git tree jq linux-image-extra-$(uname -r) linux-image-extra-virtual
+# compose
+curl -L https://github.com/docker/compose/releases/download/1.11.1/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
 
 {{dinfo}}
 reboot
@@ -122,11 +127,9 @@ AMIBUILD = '''#!/bin/sh
 #
 FQDN="{{fqdn}}"
 
-# /etc/hostname - /etc/hosts
+# hostname
+hostnamectl set-hostname $FQDN
 sed -i "1 c\\127.0.0.1 $FQDN localhost" /etc/hosts
-echo $FQDN > /etc/hostname
-service hostname restart
-sleep 5
 
 {{dinfo}}
 reboot
