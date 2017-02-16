@@ -7,6 +7,7 @@ FQDN="{fqdn}"
 
 # hostname
 hostnamectl set-hostname $FQDN
+sed -i "1 c\\127.0.0.1 $FQDN localhost" /etc/hosts
 
 {dinfo}
 '''
