@@ -59,6 +59,8 @@ apt-get update && apt-get install -y \
 systemctl start docker
 sleep 15
 
+usermod -aG docker ubuntu
+
 # compose
 curl -L https://github.com/docker/compose/releases/download/1.11.1/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
@@ -70,8 +72,6 @@ chmod +x /usr/local/bin/docker-compose
 echo ubuntu:{1} | chpasswd
 sed -i 's|[#]*PasswordAuthentication no|PasswordAuthentication yes|g' /etc/ssh/sshd_config
 service ssh restart
-
-usermod -aG docker ubuntu
 
 {{dinfo}}
 reboot
@@ -114,7 +114,7 @@ usermod -aG docker ubuntu
 curl -L https://github.com/docker/compose/releases/download/1.11.1/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 
-# download ucp images (no install)
+# download/install upc
 docker run --name ucp --rm -v /var/run/docker.sock:/var/run/docker.sock docker/ucp images
 
 # password authentication
@@ -125,6 +125,41 @@ service ssh restart
 {{dinfo}}
 reboot
 '''.format(ubuntu_pass)
+
+LDAP = '''#!/bin/sh
+
+FQDN="{fqdn}"
+
+export DEBIAN_FRONTEND=noninteractive
+
+# locale
+sudo locale-gen en_US.UTF-8
+
+# hostname
+hostnamectl set-hostname $FQDN
+sed -i "1 c\\127.0.0.1 $FQDN localhost" /etc/hosts
+
+# required packages
+apt-get update
+apt-get install -y -q slapd ldap-utils phpldapadmin
+
+# config files - temp solution
+curl -sSL https://gist.githubusercontent.com/kizbitz/f2e10ccdbf9db4bbbe7262d9e5fc09ff/raw/af233a12e78851399e1d7e8ea8bc2758bcea6f0a/docker-ldap-training-configs.sh | sh
+
+# final prep
+chown root:www-data /etc/phpldapadmin/config.php
+rm -r /var/lib/ldap/*
+rm -r /etc/ldap/slapd.d/*
+slapadd -F /etc/ldap/slapd.d -b cn=config -l /tmp/config.ldif
+slapadd -l /tmp/data.ldif
+chown -R openldap:openldap /etc/ldap/slapd.d
+chown -R openldap:openldap /var/lib/ldap
+
+service slapd restart
+service apache2 restart
+
+{dinfo}
+'''
 
 # Script to use if launching from a custom lab AMI image
 AMIBUILD = '''#!/bin/sh
