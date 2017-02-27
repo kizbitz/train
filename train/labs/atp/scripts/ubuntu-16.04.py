@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # prompts
-ubuntu_pass = raw_input("Enter password for 'ubuntu' user: ")
+ubuntu_pass = raw_input("Enter password for 'ubuntu' user (letters and digits only): ")
 
 # scripts
 PRIMARY_OS = 'Ubuntu-16.04'
@@ -30,6 +30,9 @@ apt-get update && apt-get install -y \
     inux-image-extra-$(uname -r) \
     linux-image-extra-virtual \
     tree
+
+systemctl start docker
+sleep 15
 
 usermod -aG docker ubuntu
 

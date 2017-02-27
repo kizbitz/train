@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # instance configs
-PRIMARY_OS = 'Ubuntu-14.04'
+PRIMARY_OS = 'Ubuntu-16.04'
 PRIMARY = '''#!/bin/sh
 
 FQDN="{fqdn}"
@@ -12,11 +12,9 @@ export DEBIAN_FRONTEND=noninteractive
 # locale
 sudo locale-gen en_US.UTF-8
 
-# /etc/hostname - /etc/hosts
+# hostname
+hostnamectl set-hostname $FQDN
 sed -i "1 c\\127.0.0.1 $FQDN localhost" /etc/hosts
-echo $FQDN > /etc/hostname
-service hostname restart
-sleep 5
 
 # required packages
 apt-get update
@@ -45,11 +43,9 @@ AMIBUILD = '''#!/bin/sh
 
 FQDN="{fqdn}"
 
-# /etc/hostname - /etc/hosts
+# hostname
+hostnamectl set-hostname $FQDN
 sed -i "1 c\\127.0.0.1 $FQDN localhost" /etc/hosts
-echo $FQDN > /etc/hostname
-service hostname restart
-sleep 5
 
 {dinfo}
 reboot

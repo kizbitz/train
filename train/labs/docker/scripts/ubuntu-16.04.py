@@ -112,6 +112,10 @@ apt-get update && apt-get install -y \
 
 # docker
 {0}
+
+systemctl start docker
+sleep 15
+
 usermod -aG docker ubuntu
 
 # compose

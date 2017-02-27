@@ -179,7 +179,7 @@ def launch_instances(conn, user_vpc, script, lab,
         os.makedirs('train/logs')
 
     zone_count = vpc.get_starting_zone(subnets)
-    zone_max = zone_count + len(subnets)
+    zone_max = len(subnets) + 1
     with open(USER_FILE) as users:
         for user in users:
             user = user.split(',')[0].strip()

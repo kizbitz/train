@@ -30,6 +30,9 @@ apt-get update && apt-get install -y \
     strace \
     tree
 
+systemctl start docker
+sleep 15
+
 usermod -aG docker ubuntu
 
 # compose
